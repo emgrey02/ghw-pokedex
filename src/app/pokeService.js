@@ -38,3 +38,17 @@ export async function getAllPokemon(url) {
     const pokemon = await getPokemon(url);
     return fetchPokemonData(pokemon.results);
 }
+
+export async function getPokemonFromName(formData) {
+    const rawFormData = {
+        name: formData.get('name')
+    }
+
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${rawFormData.name}`);
+
+    if (!res.ok) {
+        throw new Error('failed to fetch individual pokemon');
+    }
+    const pokemon = await res.json();
+    return pokemon;
+}

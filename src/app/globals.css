@@ -2,20 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 10, 10, 10;
-    --background-end-rgb: 50, 50, 50;
-  }
-}
-
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -26,18 +12,12 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-input {
-    background-color: inherit;
-    border-bottom: 1px solid rgb(var(--foreground-rgb));
-}
-
-input:focus {
-    outline: none;
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
-}
+} 
 
+#main {
+    grid-template-rows: 1fr 2fr minmax(600px, 70vh) .5fr;
+}

@@ -1,38 +1,27 @@
 'use client'
-import PokemonList from '@/app/PokemonList'
+import PokemonList from '@/app/PokemonList' 
+import Button from '@/app/Button';
 import { getPokemon, getAllPokemon } from '@/app/pokeService';
-import { useState, useEffect, useRef, createContext } from 'react';
+import { useState, useEffect, useRef, createContext, useCallback } from 'react';
 
 export const URLContext = createContext();
 
 export default function Page() {
     const [currentUrl, setUrl] = useState('https://pokeapi.co/api/v2/pokemon?limit=25&offset=0');
+    const [isInfoShowing, setIsInfoShowing] = useState(false);
     const generalList = useRef();
     const prevButton = useRef();
     const nextButton = useRef();
-    
-    useEffect(() => {
-        
-        async function getGeneralList() {
-            let list = await getPokemon(currentUrl);
-            generalList.current = list; 
-            prevButton.current.disabled = isDisabled('prev');
-            nextButton.current.disabled = isDisabled('next');
-        } 
-        getGeneralList();
-        
-    }, [currentUrl, prevButton, nextButton])
-    
-    function handleURLChange(e) {
-        if (e.target.id === 'prev') {
-            setUrl(generalList.current.previous);
-        } else if (e.target.id === 'next') {
-            setUrl(generalList.current.next);
-        }
+
+    const handleDataFromChild = (data) => {
+        setIsInfoShowing(data);
+        prevButton.current.disabled = isDisabled('prev');
+        nextButton.current.disabled = isDisabled('next');
     }
     
-    function isDisabled(currentButton) {
-        if (currentButton === 'prev') {
+    const isDisabled = useCallback((currentButtonName) => {
+        if (isInfoShowing) return true;
+        if (currentButtonName === 'prev') {
             if (generalList.current.previous !== null) {
                 return false;
             } else {
@@ -45,16 +34,36 @@ export default function Page() {
                 return true;
             }
         }
+    }, [isInfoShowing])
+
+    useEffect(() => {
+        
+        async function getGeneralList() {
+            let list = await getPokemon(currentUrl);
+            generalList.current = list; 
+            prevButton.current.disabled = isDisabled('prev');
+            nextButton.current.disabled = isDisabled('next');
+        } 
+        getGeneralList();
+        
+    }, [currentUrl, prevButton, nextButton, isDisabled])
+    
+    function handleURLChange(e) {
+        if (e.target.id === 'prev') {
+            setUrl(generalList.current.previous);
+        } else if (e.target.id === 'next') {
+            setUrl(generalList.current.next);
+        }
     }
     
     return (
         <URLContext.Provider value={{ currentUrl }}>
-            <main className='flex w-full min-h-screen bg-gradient-to-r from-cyan-500 to-blue-500 dark:from-cyan-950 dark:to-slate-800 flex-col items-center justify-between p-24'>
-                <h1>Pokedex</h1>
-                <PokemonList updateList={getAllPokemon} />
+            <main id='main' className='grid grid-cols-1 w-full h-dvh min-h-0 text-slate-800 dark:text-slate-200 bg-gradient-to-r from-cyan-300 to-violet-400 dark:from-cyan-950 dark:to-slate-900 px-4 py-8 md:px-16'> 
+                <h1 className='text-3xl font-medium'>Pokedex</h1>
+                <PokemonList onDataFromChild={handleDataFromChild} updateList={getAllPokemon} />
                 <div id='buttonContainer' className=" w-full flex justify-between">
-                    <button className='w-50 text-slate-900 dark:text-slate-200 bg-transparent dark:bg-transparent hover:bg-cyan-400 dark:hover:bg-cyan-700 border rounded border-slate-700 px-3 py-2 disabled:border-slate-500 dark:disabled:border-slate-700 disabled:bg-inherit disabled:text-slate-500 dark:disabled:text-slate-600 dark:hover:disabled:bg-transparent transition duration-150 ease-in-out'ref={prevButton} id='prev' onClick={handleURLChange}>Previous</button>
-                    <button className='w-50 text-slate-900 dark:text-slate-200 bg-transparent dark:bg-transparent hover:bg-cyan-400 dark:hover:bg-cyan-700 border rounded border-slate-700 px-3 py-2 disabled:border-slate-500 dark:disabled:border-slate-700 disabled:bg-inherit disabled:text-slate-500 dark:disabled:text-slate-600 dark:hover:disabled:bg-transparent transition duration-150 ease-in-out'ref={nextButton} id='next' onClick={handleURLChange}>Next</button>
+                    <Button ref={prevButton} id='prev' onClick={handleURLChange} text='Previous'/>
+                    <Button ref={nextButton} id='next' onClick={handleURLChange} text='Next'/>
                 </div>
             </main>
         </URLContext.Provider>
