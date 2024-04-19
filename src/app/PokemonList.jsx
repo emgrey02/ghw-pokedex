@@ -1,18 +1,18 @@
 'use client'
 import Image from 'next/image';
-import { URLContext } from './page';
-import { useEffect, useState, useContext, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import PokemonSearch from '@/app/PokemonSearch';
 import PokeInfo from '@/app/PokeInfo';
 
-export default function PokemonList({ updateList, onDataFromChild }) {
+export default function PokemonList({ updateList, onDataFromChild, currentUrl }) {
     const [pokemonList, setPokemonList] = useState(null);
     const [isLoading, setLoading] = useState(true);
     const [showInfo, setShowInfo] = useState(false);
 
-    let clickedPoke = useRef();
+    const [isInfoMounted, setIsInfoMounted] = useState(false);
+    const hasInfoTransitionedIn = useMountTransition(isInfoMounted, 500);
 
-    let { currentUrl } = useContext(URLContext);
+    let clickedPoke = useRef();
 
     const sendDataToParent = (data) => {
         onDataFromChild(data);
@@ -21,6 +21,7 @@ export default function PokemonList({ updateList, onDataFromChild }) {
     const showPokeInfoFromSearch = (data) => {
         clickedPoke.current = data;
         setShowInfo(true);
+        setIsInfoMounted(true);
         sendDataToParent(true);
     }
     
@@ -29,12 +30,33 @@ export default function PokemonList({ updateList, onDataFromChild }) {
         clickedPoke.current = pokemonList[clickedPokeIndex];
         console.log(clickedPoke);
         setShowInfo(true);
+        setIsInfoMounted(true);
         sendDataToParent(true);
     };
 
     const hidePokeInfo = () => {
         setShowInfo(false);
+        setIsInfoMounted(false);
         sendDataToParent(false);
+    }
+
+    function useMountTransition(isInfoMounted, unmountDelay) {
+        const [hasInfoTransitionedIn, setHasInfoTransitionedIn] = useState(false);
+
+        useEffect(() => {
+            let timeoutId;
+
+            if (isInfoMounted && !hasInfoTransitionedIn) {
+                setHasInfoTransitionedIn(true);
+            } else if (!isInfoMounted && setHasInfoTransitionedIn) {
+                timeoutId = setTimeout(() => setHasInfoTransitionedIn(false), unmountDelay)
+            }
+
+            return () => {
+                clearTimeout(timeoutId);
+            }
+        }, [unmountDelay, isInfoMounted, hasInfoTransitionedIn])
+        return hasInfoTransitionedIn;
     }
 
     useEffect(() => {
@@ -45,11 +67,11 @@ export default function PokemonList({ updateList, onDataFromChild }) {
         }).catch(error => console.error(error));
     },[currentUrl, updateList])
 
-    if (showInfo) return (
-        <>
-            <button className='z-20 place-self-start self-end dark:text-slate-800 font-semibold dark:hover:text-slate-200 bg-indigo-900/60 hover:bg-indigo-900/30 text-slate-100 dark:bg-indigo-400 dark:hover:bg-indigo-400/50 rounded transition-all focus:outline-none focus:ring-4 ring-indigo-950 border border-slate-800 dark:border-slate-600 px-7 py-3' onClick={hidePokeInfo}>Back</button>
-            <PokeInfo currentPoke={clickedPoke.current} />
-        </>
+    if (showInfo && (hasInfoTransitionedIn || isInfoMounted)) return (
+            <div id='theInfo' className={`place-self-center flex flex-col gap-y-4 $`}>
+                <button className='z-20 dark:text-slate-800 font-semibold dark:hover:text-slate-200 bg-indigo-900/60 hover:bg-indigo-900/30 text-slate-100 dark:bg-indigo-400 dark:hover:bg-indigo-400/50 rounded transition-all focus:outline-none focus:ring-4 ring-indigo-950 border border-slate-800 dark:border-slate-600 px-7 py-3' onClick={hidePokeInfo}>Back</button>
+                <PokeInfo tr={hasInfoTransitionedIn} mo={isInfoMounted} currentPoke={clickedPoke.current} />
+            </div>
     )
 
     return (
@@ -64,12 +86,12 @@ export default function PokemonList({ updateList, onDataFromChild }) {
                 </div>
             ) : (
                 <>
-                    <ul id='listComp' className='w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 overflow-scroll ring-2 ring-indigo-300 dark:ring-indigo-950 my-4 py-2 rounded'>
+                    <ul id='listComp' className={`w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 overflow-scroll ring-2 ring-indigo-300 dark:ring-indigo-950 my-4 py-2 rounded {${!hasInfoTransitionedIn && 'in'} ${!isInfoMounted && 'visible'}`}>
                         {
                             pokemonList.map((poke, index) =>
                             (
                                 <li className='flex flex-col justify-between items-center' key={poke.order}>
-                                    <button className='h-full px-3 text-gray-700 dark:text-gray-400  hover:dark:text-gray-300 font-semibold py-3 hover:ring-2 hover:ring-slate-500 hover:dark:ring-slate-950/60 rounded-sm hover:shadow-lg hover:shadow-slate-500/60 hover:dark:shadow-slate-900/80 hover:bg-sky-300/40 hover:dark:bg-indigo-950/40 focus:outline-0 focus:ring-2 focus:ring-slate-600 transition-all'onClick={showPokeInfo} data-order={index}>
+                                    <button className='h-full px-3 text-gray-700 dark:text-gray-400  hover:dark:text-gray-300 hover:text-gray-950 hover:font-semibold py-3  hover:ring-slate-500 hover:dark:ring-slate-950/60 rounded-lg hover:shadow-lg hover:shadow-slate-500/60 hover:dark:shadow-slate-900/80 hover:bg-sky-300/40 hover:dark:bg-indigo-900/20 focus:outline-0 focus:ring-2 focus:ring-slate-600 transition-all'onClick={showPokeInfo} data-order={index}>
                                         <Image
                                             src={poke.sprites.front_default}        
                                             width={100}
