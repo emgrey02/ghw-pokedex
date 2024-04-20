@@ -34,6 +34,11 @@ export async function getNextPage (nextUrl) {
     return pokemon;
 }
 
+export async function getOnePokemon(url) {
+    const res = await fetch(url);
+    return res.json();
+}
+
 export async function getAllPokemon(url) {
     const pokemon = await getPokemon(url);
     return fetchPokemonData(pokemon.results);

@@ -1,11 +1,12 @@
 'use client'
 import Image from 'next/image';
+import { getOnePokemon, getPokemon } from '@/app/pokeService';
 import { useEffect, useState, useRef } from 'react';
 import PokemonSearch from '@/app/PokemonSearch';
 import PokeInfo from '@/app/PokeInfo';
 
-export default function PokemonList({ updateList, onDataFromChild, currentUrl }) {
-    const [pokemonList, setPokemonList] = useState(null);
+export default function PokemonList({ onDataFromChild, currentUrl }) {
+    const [pokemonList, setPokemonList] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [showInfo, setShowInfo] = useState(false);
 
@@ -60,12 +61,24 @@ export default function PokemonList({ updateList, onDataFromChild, currentUrl })
     }
 
     useEffect(() => {
+        console.log('useEffect called');
+        const abortController = new AbortController();
         setLoading(true);
-        updateList(currentUrl).then((data) => {
-            setPokemonList(data);
+        let pokeList = [];
+        getPokemon(currentUrl).then(async (data) => {
+            data.results.forEach(async (result, index) => {
+                let res = await getOnePokemon(result.url);
+                setPokemonList((pokeList) => {
+                    if (pokeList.length >= 25) return pokeList;
+                    else return [...pokeList, res]
+                });
+                pokeList.push(res);
+            })
             setLoading(false);
         }).catch(error => console.error(error));
-    },[currentUrl, updateList])
+        
+        return () => abortController.abort();
+    }, [currentUrl])
 
     if (showInfo && (hasInfoTransitionedIn || isInfoMounted)) return (
             <div id='theInfo' className={`place-self-center flex flex-col gap-y-4 $`}>

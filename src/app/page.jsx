@@ -1,7 +1,7 @@
 'use client'
 import PokemonList from '@/app/PokemonList' 
 import Button from '@/app/Button';
-import { getPokemon, getAllPokemon } from '@/app/pokeService';
+import { getPokemon } from '@/app/pokeService';
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 export default function Page() {
@@ -110,7 +110,7 @@ export default function Page() {
         <>
             <main id='main' className={`grid grid-cols-1 w-full md:h-dvh md:min-h-dvh text-slate-800 dark:text-slate-200 bg-gradient-to-r from-cyan-300 to-violet-400 dark:from-cyan-950 dark:to-slate-900 px-4 py-8 md:px-16 ${isInfoShowing ? 'yes-info' : 'no-info'}`}> 
                         <h1 className='text-3xl font-medium py-4'>Pokedex</h1>
-                <PokemonList currentUrl={currentUrl} onDataFromChild={handleDataFromChild} updateList={getAllPokemon} />
+                <PokemonList currentUrl={currentUrl} key={currentUrl} onDataFromChild={handleDataFromChild} />
                         <div id='buttonContainer' className={`w-full flex justify-between place-self-center`}>
                             <Button ref={prevButton} id='prev' onClick={handleURLChange} text='Previous'/>
                             <Button ref={nextButton} id='next' onClick={handleURLChange} text='Next'/>
