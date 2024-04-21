@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'; 
+import { useState} from 'react'; 
     
 export default function PokemonSearch({ onDataFromChild }) {
     const [errorMessage, setErrorMessage] = useState(null);
@@ -9,9 +9,9 @@ export default function PokemonSearch({ onDataFromChild }) {
         setLoading(false);
     }
 
-    function preventDefault(e) {
+    function doTheThing(e) {
         e.preventDefault();
-        getPokemonFromSearch(e.currentTarget[0].value);
+        getPokemonFromSearch(e.currentTarget[0].value.toLowerCase());
     }
 
     async function getPokemonFromSearch(name) {
@@ -41,7 +41,7 @@ export default function PokemonSearch({ onDataFromChild }) {
 
     return (
         <>
-            <form onSubmit={preventDefault} action={getPokemonFromSearch} className='grid w-80 my-10'>
+            <form onSubmit={doTheThing} className='grid w-80 my-10'>
                 <label>Search for a Pokemon</label> 
                 <input className='bg-slate-600 text-slate-200 dark:bg-slate-400 dark:text-slate-900 p-2 my-2 rounded focus:outline-none focus:ring-4 ring-indigo-950 dark:ring-indigo-200 transition-all' name='name' id='name' type='text' />
                 <span className='text-xs h-5 text-red-600 dark:text-red-300 font-bold'>{errorMessage ? errorMessage : ''}</span>
