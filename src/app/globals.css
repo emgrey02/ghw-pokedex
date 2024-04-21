@@ -3,27 +3,6 @@
 @tailwind utilities;
 
 
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-/* Track */
-/* ::-webkit-scrollbar-track {
-    background: #000000;
-    border-radius: 20px;
-} */
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: #0000004b;
-    border-radius: 50px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: #b80e0e;
-} 
-
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -57,13 +36,4 @@ body {
 #card.in.visible {
     opacity: 1;
 }
-
-/* #listComp {
-    opacity: 0;
-    transition: opacity 500ms ease;
-}
-
-#listComp.in.visible {
-    opacity: 1;
-} */
 
