@@ -1,5 +1,5 @@
 'use client'
-import { getAllPokemon } from '@/app/pokeService';
+import { getPokemon } from '@/app/pokeService';
 import { useEffect, useState, useRef } from 'react';
 import PokemonSearch from '@/app/PokemonSearch';
 import PokemonList from '@/app/PokemonList';
@@ -63,10 +63,21 @@ export default function PokemonListContainer({ onDataFromChild, currentUrl }) {
     useEffect(() => {
         setLoading(true);
 
-        getAllPokemon(currentUrl).then(data => {
-            setPokemonList(data);
+        getPokemon(currentUrl).then(async (data) => {
+            let pokemonArray = [];
+            for (let i = 0; i < data.results.length; i++) {
+                let url = data.results[i].url;
+                const res = await fetch(url, {method: 'get'});
+                if (!res.ok) {
+                    throw new Error('failed to fetch individual pokemon data');
+                }
+                pokemonArray.push(await res.json());
+            }
+            return pokemonArray;
+        }).then((array) => {
+            setPokemonList(array);
             setLoading(false);
-        }).catch(error => console.error(error)); 
+        }).catch(error => console.error(error));
         
     }, [currentUrl])
 
