@@ -2,34 +2,31 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 export default function PokeInfo({ currentPoke, tr, mo }) {
-    const [audio] = useState(new Audio(currentPoke.cries.latest));
     const [playing, setPlaying] = useState(false);
-    audio.play();
-    audio.pause();
-
-    const playAudio = (e) => {
-        setPlaying(true);
-    }
 
     useEffect(() => {
-        audio.volume = .2;
-        playing ? audio.play() : audio.pause();
-        
-    }, [playing, audio])
-    
-    useEffect(() => {
-        audio.addEventListener('ended', () => setPlaying(false));
+        let audioElement = document.querySelector('audio');
+        audioElement.addEventListener('ended', () => setPlaying(false));
     
         return () => {
-            audio.removeEventListener('ended', () => setPlaying(false));
+            audioElement.removeEventListener('ended', () => setPlaying(false));
         }
-    },)
+    }, [])
+    
+    useEffect(() => {
+        let audioElement = document.querySelector('audio');
+        audioElement.volume = .2;
+        playing ? audioElement.play() : audioElement.pause();
+        
+    }, [playing])
+    
     
     return (
         <div id='card' className={`place-self-center z-20 text-zinc-700 dark:text-gray-400 w-fit h-min flex flex-col gap-4 p-8 bg-zinc-400/50 dark:bg-zinc-600/50 outline outline-slate-600 shadow-xl shadow-slate-900/30 rounded-md ${tr && 'in'} ${mo && 'visible'}`}>
             <div className='grid grid-cols-2 h-min w-full gap-6 pb-10'>
                 <div className='flex flex-col ring-1 ring-indigo-900 dark:ring-indigo-300 p-4 self-start'>
-                    <button title='Hear My Cry!' className='hover:bg-gray-100/10 rounded-full transition-all' onClick={playAudio}>
+                    <button title='Hear My Cry!' className='hover:bg-gray-100/10 rounded-full transition-all' onClick={()=>setPlaying(true)}>
+                        <audio src={currentPoke.cries.latest}></audio>
                         <Image
                             className={playing ? 'animate-ping' : ''}
                             src={currentPoke.sprites.front_default}
