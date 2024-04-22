@@ -1,19 +1,33 @@
 'use client'
 import { getPokemon } from '@/app/pokeService';
+import Button from '@/app/Button';
 import { useEffect, useState, useRef } from 'react';
 import PokemonSearch from '@/app/PokemonSearch';
 import PokemonList from '@/app/PokemonList';
 import PokeInfo from '@/app/PokeInfo';
 
-export default function PokemonListContainer({ onDataFromChild, currentUrl }) {
+export default function PokemonListContainer({ onDataFromChild }) {
     const [pokemonList, setPokemonList] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [showInfo, setShowInfo] = useState(false);
+    const [currentUrl, setUrl] = useState('https://pokeapi.co/api/v2/pokemon?limit=25&offset=0');
+    const [isPrevDisabled, setPrevDisabled] = useState(false);
+    const [isNextDisabled, setNextDisabled] = useState(false);
 
     const [isInfoMounted, setIsInfoMounted] = useState(false);
     const hasInfoTransitionedIn = useMountTransition(isInfoMounted, 500);
 
-    let clickedPoke = useRef();
+    const clickedPoke = useRef();
+    const generalList = useRef();
+    
+    function handleURLChange(e) {
+        window.scrollTo(0,0)
+        if (e.target.id === 'prev') {
+            setUrl(generalList.current.previous);
+        } else if (e.target.id === 'next') {
+            setUrl(generalList.current.next);
+        }
+    }
 
     const sendDataToParent = (data) => {
         onDataFromChild(data);
@@ -63,6 +77,29 @@ export default function PokemonListContainer({ onDataFromChild, currentUrl }) {
     useEffect(() => {
         setLoading(true);
 
+        function setDisability(list) {
+            if (list.previous == null) {
+                setPrevDisabled(true);
+            } else {
+                setPrevDisabled(false);
+            }
+    
+            if (list.next == null) {
+                setNextDisabled(true);
+            } else {
+                setNextDisabled(false);
+            }
+        }
+
+        async function getGeneralList() {
+            let list = await getPokemon(currentUrl);
+            generalList.current = list; 
+            setDisability(list);
+        } 
+        
+        getGeneralList();
+
+
         getPokemon(currentUrl).then(async (data) => {
             let pokemonArray = [];
             for (let i = 0; i < data.results.length; i++) {
@@ -91,6 +128,10 @@ export default function PokemonListContainer({ onDataFromChild, currentUrl }) {
     return (
         <>
             <PokemonSearch onDataFromChild={showPokeInfoFromSearch} />
+            <div className={`w-full flex justify-between place-self-center`}>
+                <Button id='prev' onClick={handleURLChange} disabled={isPrevDisabled} text='Previous'/>
+                <Button id='next' onClick={handleURLChange} disabled={isNextDisabled} text='Next'/>
+            </div>
             {isLoading ? (
                 <div id='loadingComp' className='w-full h-full grid gap-2 place-items-center'>
                     <div className='flex gap-2 place-items-center'>
@@ -99,8 +140,12 @@ export default function PokemonListContainer({ onDataFromChild, currentUrl }) {
                     </div>
                 </div>
             ) : (
-                <PokemonList pokemonList={pokemonList} key={pokemonList} showPokeInfo={showPokeInfo} />
+                <PokemonList pokemonList={pokemonList} showPokeInfo={showPokeInfo} />
             )}
+            <div className={`w-full flex justify-between place-self-center`}>
+                <Button id='prev' onClick={handleURLChange} disabled={isPrevDisabled} text='Previous'/>
+                <Button id='next' onClick={handleURLChange} disabled={isNextDisabled} text='Next'/>
+            </div>
 
         </>
     )
