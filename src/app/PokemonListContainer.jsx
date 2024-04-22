@@ -43,7 +43,6 @@ export default function PokemonListContainer({ onDataFromChild }) {
     const showPokeInfo = (e) => {
         let clickedPokeIndex = e.currentTarget.getAttribute('data-order');
         clickedPoke.current = pokemonList[clickedPokeIndex];
-        console.log(clickedPoke);
         setShowInfo(true);
         setIsInfoMounted(true);
         sendDataToParent(true);
