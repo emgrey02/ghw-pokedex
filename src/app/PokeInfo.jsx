@@ -15,6 +15,8 @@ export default function PokeInfo({ currentPoke, tr, mo }) {
     
     useEffect(() => {
         let audioElement = document.querySelector('audio');
+        audioElement.play();
+        audioElement.pause();
         audioElement.volume = .2;
         playing ? audioElement.play() : audioElement.pause();
         
