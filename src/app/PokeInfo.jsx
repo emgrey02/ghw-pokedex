@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 export default function PokeInfo({ currentPoke, tr, mo }) {
     const [audio] = useState(new Audio(currentPoke.cries.latest));
     const [playing, setPlaying] = useState(false);
+    audio.play();
+    audio.pause();
 
     const playAudio = (e) => {
         setPlaying(true);
@@ -28,7 +30,6 @@ export default function PokeInfo({ currentPoke, tr, mo }) {
             <div className='grid grid-cols-2 h-min w-full gap-6 pb-10'>
                 <div className='flex flex-col ring-1 ring-indigo-900 dark:ring-indigo-300 p-4 self-start'>
                     <button title='Hear My Cry!' className='hover:bg-gray-100/10 rounded-full transition-all' onClick={playAudio}>
-                        <audio src={currentPoke.cries.latest}></audio>
                         <Image
                             className={playing ? 'animate-ping' : ''}
                             src={currentPoke.sprites.front_default}
