@@ -1,17 +1,27 @@
 import Image from 'next/image';
-import { useState} from 'react';
+import { useState, useEffect } from 'react';
 
 export default function PokeInfo({ currentPoke, tr, mo }) {
-    const [audioIsPlaying, setAudioIsPlaying] = useState(false);
+    const [audio] = useState(new Audio(currentPoke.cries.latest));
+    const [playing, setPlaying] = useState(false);
 
     const playAudio = (e) => {
-        setAudioIsPlaying(true);
-        e.currentTarget.firstChild.play();
-        e.currentTarget.firstChild.volume = .1;
-        setTimeout(() => {
-            setAudioIsPlaying(false);
-        }, 1000)
+        setPlaying(true);
     }
+
+    useEffect(() => {
+        audio.volume = .2;
+        playing ? audio.play() : audio.pause();
+        
+    }, [playing, audio])
+    
+    useEffect(() => {
+        audio.addEventListener('ended', () => setPlaying(false));
+    
+        return () => {
+            audio.removeEventListener('ended', () => setPlaying(false));
+        }
+    },)
     
     return (
         <div id='card' className={`place-self-center z-20 text-zinc-700 dark:text-gray-400 w-fit h-min flex flex-col gap-4 p-8 bg-zinc-400/50 dark:bg-zinc-600/50 outline outline-slate-600 shadow-xl shadow-slate-900/30 rounded-md ${tr && 'in'} ${mo && 'visible'}`}>
@@ -20,7 +30,7 @@ export default function PokeInfo({ currentPoke, tr, mo }) {
                     <button title='Hear My Cry!' className='hover:bg-gray-100/10 rounded-full transition-all' onClick={playAudio}>
                         <audio src={currentPoke.cries.latest}></audio>
                         <Image
-                            className={audioIsPlaying ? 'animate-ping' : ''}
+                            className={playing ? 'animate-ping' : ''}
                             src={currentPoke.sprites.front_default}
                             width={150}
                             height={150}
