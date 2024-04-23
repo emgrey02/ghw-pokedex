@@ -20,11 +20,11 @@ body {
 } 
 
 .no-info {
-    grid-template-rows: .1fr .3fr 100px 5fr 100px;
+    grid-template-rows: 100px .3fr 100px 5fr 100px;
 }
  
 .yes-info {
-    grid-template-rows: .2fr auto 100px;
+    grid-template-rows: 100px auto 100px;
     min-height: 100vh;
 }
 
