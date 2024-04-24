@@ -1,5 +1,6 @@
 'use client'
 import PokemonListContainer from '@/app/PokemonListContainer';
+import Loading from '@/app/loading';
 import Image from 'next/image';
 import dex from '../../public/pokeDEX.png';
 
