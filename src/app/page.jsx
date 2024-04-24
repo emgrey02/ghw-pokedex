@@ -1,12 +1,15 @@
 'use client'
-import PokemonListContainer from '@/app/PokemonListContainer' 
+import PokemonListContainer from '@/app/PokemonListContainer';
 import Image from 'next/image';
 import dex from '../../public/pokeDEX.png';
 
-import { getPokemon } from '@/app/pokeService';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 export default function Page() {
+    const params = useSearchParams();
+    const pageNum = params.get('page');
+
     const [isInfoShowing, setIsInfoShowing] = useState(false);
     
     const handleDataFromChild = (data) => {
@@ -20,7 +23,7 @@ export default function Page() {
                     <Image width='80' height='80' alt='pokedex icon' src={dex}/>
                     <h1 className='text-3xl font-medium py-4'>Pokedex</h1>
                 </div>
-                <PokemonListContainer onDataFromChild={handleDataFromChild} />
+                <PokemonListContainer page={pageNum} onDataFromChild={handleDataFromChild} />
             </main>
         </>
 	);

@@ -15,7 +15,7 @@ async function fetchPokemonData(pokemonList) {
     let pokemonArray = [];
     for (let i = 0; i < pokemonList.length; i++) {
         let url = pokemonList[i].url;
-        const res = await fetch(url, {method: 'get'});
+        const res = await fetch(url);
         if (!res.ok) {
             throw new Error('failed to fetch individual pokemon data');
         }
@@ -24,15 +24,17 @@ async function fetchPokemonData(pokemonList) {
     return pokemonArray;
 }
 
-export async function getPrevPage(prevUrl)  {
-    let pokemon = await getAllPokemon(prevUrl);
-    return pokemon;
-}
+export async function getCurrentPokemon(pageNum) {
+    const offset = Number(pageNum ?? '0') - 1 + '0'; //We're getting 10 pokemon at a time, easier to just add a 0 on to the string
+    const url = `https://pokeapi.co/api/v2/pokemon/?limit=15&offset=${offset}`;
+    
 
-export async function getNextPage (nextUrl) {
-    let pokemon = await getAllPokemon(nextUrl);
+    const pokemonUrls = await fetch(url).then((res) => res.json());
+    const pokemon = await Promise.all(
+        pokemonUrls.results.map((p) => getOnePokemon(p.url))
+    );
     return pokemon;
-}
+};
 
 export async function getOnePokemon(url) {
     const res = await fetch(url);

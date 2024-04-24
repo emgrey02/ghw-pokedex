@@ -22,6 +22,12 @@ body {
 .no-info {
     grid-template-rows: 100px .3fr 100px 5fr 100px;
 }
+
+@media (min-width: 768px) {
+    .no-info {
+        grid-template-rows: 100px .3fr 5fr 100px;
+    }
+}
  
 .yes-info {
     grid-template-rows: 100px auto 100px;

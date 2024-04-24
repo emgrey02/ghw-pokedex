@@ -1,31 +1,40 @@
 'use client'
-import { getPokemon } from '@/app/pokeService';
+import { getCurrentPokemon } from '@/app/pokeService';
 import Button from '@/app/Button';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import PokemonSearch from '@/app/PokemonSearch';
 import PokemonList from '@/app/PokemonList';
 import PokeInfo from '@/app/PokeInfo';
+import PaginationBar from '@/app/PaginationBar';
 
-export default function PokemonListContainer({ onDataFromChild }) {
+export default function PokemonListContainer({ onDataFromChild, page }) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const createQueryString = useCallback((name, value) => {
+        const params = new URLSearchParams(searchParams);
+        params.set(name, value);
+
+        return params.toString()
+    }, [searchParams])
+
     const [pokemonList, setPokemonList] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [showInfo, setShowInfo] = useState(false);
-    const [currentUrl, setUrl] = useState('https://pokeapi.co/api/v2/pokemon?limit=25&offset=0');
-    const [isPrevDisabled, setPrevDisabled] = useState(false);
-    const [isNextDisabled, setNextDisabled] = useState(false);
 
     const [isInfoMounted, setIsInfoMounted] = useState(false);
     const hasInfoTransitionedIn = useMountTransition(isInfoMounted, 500);
 
     const clickedPoke = useRef();
-    const generalList = useRef();
     
     function handleURLChange(e) {
         window.scrollTo(0,0)
         if (e.target.id === 'prev') {
-            setUrl(generalList.current.previous);
+            router.push(pathname + '?' + createQueryString('page', Number(page) - 1))
         } else if (e.target.id === 'next') {
-            setUrl(generalList.current.next);
+            router.push(pathname + '?' + createQueryString('page', Number(page) + 1))
         }
     }
 
@@ -73,49 +82,16 @@ export default function PokemonListContainer({ onDataFromChild }) {
         return hasInfoTransitionedIn;
     }
 
-    useEffect(() => {
+    useEffect( () => {
         setLoading(true);
 
-        function setDisability(list) {
-            if (list.previous == null) {
-                setPrevDisabled(true);
-            } else {
-                setPrevDisabled(false);
-            }
-    
-            if (list.next == null) {
-                setNextDisabled(true);
-            } else {
-                setNextDisabled(false);
-            }
-        }
-
-        async function getGeneralList() {
-            let list = await getPokemon(currentUrl);
-            generalList.current = list; 
-            setDisability(list);
-        } 
-        
-        getGeneralList();
-
-
-        getPokemon(currentUrl).then(async (data) => {
-            let pokemonArray = [];
-            for (let i = 0; i < data.results.length; i++) {
-                let url = data.results[i].url;
-                const res = await fetch(url, {method: 'get'});
-                if (!res.ok) {
-                    throw new Error('failed to fetch individual pokemon data');
-                }
-                pokemonArray.push(await res.json());
-            }
-            return pokemonArray;
-        }).then((array) => {
-            setPokemonList(array);
+        getCurrentPokemon(page).then(async (data) => {
+            console.log(data);
+            setPokemonList(data);
             setLoading(false);
         }).catch(error => console.error(error));
         
-    }, [currentUrl])
+    }, [page])
 
     if (showInfo && (hasInfoTransitionedIn || isInfoMounted)) return (
             <div id='theInfo' className={`place-self-center flex flex-col gap-y-4 $`}>
@@ -127,9 +103,8 @@ export default function PokemonListContainer({ onDataFromChild }) {
     return (
         <>
             <PokemonSearch onDataFromChild={showPokeInfoFromSearch} />
-            <div className={`w-full flex justify-between place-self-center`}>
-                <Button id='prev' onClick={handleURLChange} disabled={isPrevDisabled} text='Previous'/>
-                <Button id='next' onClick={handleURLChange} disabled={isNextDisabled} text='Next'/>
+            <div className={`w-full flex justify-between items-center place-self-center md:hidden`}>
+                <PaginationBar page={page} key={page} />
             </div>
             {isLoading ? (
                 <div id='loadingComp' className='w-full h-full grid gap-2 place-items-center'>
@@ -139,13 +114,11 @@ export default function PokemonListContainer({ onDataFromChild }) {
                     </div>
                 </div>
             ) : (
-                <PokemonList pokemonList={pokemonList} showPokeInfo={showPokeInfo} />
+                    <PokemonList pokemonList={pokemonList} showPokeInfo={showPokeInfo} />
             )}
-            <div className={`w-full flex justify-between place-self-center`}>
-                <Button id='prev' onClick={handleURLChange} disabled={isPrevDisabled} text='Previous'/>
-                <Button id='next' onClick={handleURLChange} disabled={isNextDisabled} text='Next'/>
+            <div className={`w-full flex justify-between items-center place-self-center`}>
+                <PaginationBar page={page} key={page} />
             </div>
-
         </>
     )
 }
