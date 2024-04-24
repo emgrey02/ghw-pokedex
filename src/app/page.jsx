@@ -9,7 +9,7 @@ import { useSearchParams } from 'next/navigation';
 
 export default function Page() {
     const params = useSearchParams();
-    const pageNum = params.get('page') || 0;
+    const pageNum = params.get('page') || 1;
 
     const [isInfoShowing, setIsInfoShowing] = useState(false);
     
