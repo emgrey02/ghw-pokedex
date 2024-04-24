@@ -28,15 +28,6 @@ export default function PokemonListContainer({ onDataFromChild, page }) {
     const hasInfoTransitionedIn = useMountTransition(isInfoMounted, 500);
 
     const clickedPoke = useRef();
-    
-    function handleURLChange(e) {
-        window.scrollTo(0,0)
-        if (e.target.id === 'prev') {
-            router.push(pathname + '?' + createQueryString('page', Number(page) - 1))
-        } else if (e.target.id === 'next') {
-            router.push(pathname + '?' + createQueryString('page', Number(page) + 1))
-        }
-    }
 
     const sendDataToParent = (data) => {
         onDataFromChild(data);

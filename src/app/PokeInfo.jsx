@@ -7,22 +7,23 @@ export default function PokeInfo({ currentPoke, tr, mo }) {
     useEffect(() => {
         let audioElement = document.querySelector('audio');
         audioElement.addEventListener('ended', () => setPlaying(false));
-        audioElement.play();
-        setTimeout(() => {
-            audioElement.pause();
-        }, 200);
     
         return () => {
             audioElement.removeEventListener('ended', () => setPlaying(false));
         }
     }, [])
     
-    useEffect(() => {
-        let audioElement = document.querySelector('audio');
-        audioElement.volume = .2;
-        playing ? audioElement.play() : audioElement.pause();
+    // useEffect(() => {
+    //     let audioElement = document.querySelector('audio');
+    //     audioElement.volume = .2;
+    //     playing ? audioElement.play() : audioElement.pause();
         
-    }, [playing])
+    // }, [playing])
+
+    function playAudio(e) {
+        setPlaying(true);
+        e.currentTarget.firstChild.play();
+    }
     
     
     return (
@@ -30,9 +31,7 @@ export default function PokeInfo({ currentPoke, tr, mo }) {
             <div id='card' className={`place-self-center z-20 text-zinc-700 dark:text-gray-400 w-fit h-min flex flex-col gap-4 p-8 bg-zinc-400/50 dark:bg-zinc-600/50 outline outline-slate-600 shadow-xl shadow-slate-900/30 rounded-md ${tr && 'in'} ${mo && 'visible'}`}>
                 <div className='grid grid-cols-2 h-min w-full gap-6 pb-10'>
                     <div className='flex flex-col ring-1 ring-indigo-900 dark:ring-indigo-300 p-4 self-start'>
-                        <button title='Hear My Cry!' className='hover:bg-gray-100/10 rounded-full transition-all' onClick={() => {
-                            setPlaying(true);
-                        }}>
+                        <button title='Hear My Cry!' className='hover:bg-gray-100/10 rounded-full transition-all' onClick={playAudio}>
                             <audio src={currentPoke.cries.latest}></audio>
                             <Image
                                 className={playing ? 'animate-ping' : ''}
