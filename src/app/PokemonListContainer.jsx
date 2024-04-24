@@ -106,11 +106,11 @@ export default function PokemonListContainer({ onDataFromChild, page }) {
             <div className={`w-full flex justify-between items-center place-self-center md:hidden`}>
                 <PaginationBar page={page} key={page} />
             </div>
-            {/* {isLoading ? (
+            {isLoading ? (
                 <Loading />
-            ) : ( */}
+            ) : (
                     <PokemonList pokemonList={pokemonList} showPokeInfo={showPokeInfo} />
-            {/* )} */}
+            )}
             <div className={`w-full flex justify-between items-center place-self-center`}>
                 <PaginationBar page={page} key={page} />
             </div>

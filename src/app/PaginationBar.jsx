@@ -56,7 +56,7 @@ export default function PaginationBar({ page }) {
     return ( 
         <div className='flex flex-row justify-center align-center h-full w-full'>
             <ul className='grid grid-cols-13 place-items-center h-min w-full'> 
-                <Link className='hover:bg-indigo-400 hover:text-slate-800 hover:font-bold p-2 rounded-lg transition-all' href={`/?page=1`} page={1}>First</Link>
+                <Link className='hover:bg-indigo-400 hover:text-slate-800 hover:font-bold p-2 rounded-lg transition-all disabled:text-slate-300' href={`/?page=1`} page={1} disabled={isBackDisabled}>First</Link>
                 <Button id='prev' onClick={changePage} text='&#129168;' disabled={isBackDisabled} />
                 <div className={`${page <= 5 ? 'invisible' : ''}`} >...</div>
                 {pages.map((p) => (
@@ -66,7 +66,7 @@ export default function PaginationBar({ page }) {
                 ))}
                 <div className={`${page >= 111 ? 'invisible' : ''}`}>...</div>
                 <Button id='next' onClick={changePage} text='&#129170;' disabled={isNextDisabled} />
-                <Link className={`hover:bg-indigo-400 hover:text-slate-800 hover:font-bold p-2 rounded-lg transition-all`} href={`/?page=114`} page={114}>Last</Link>
+                <Link className={`hover:bg-indigo-400 hover:text-slate-800 hover:font-bold p-2 rounded-lg transition-all disabled:text-slate-300`} href={`/?page=114`} disabled={isNextDisabled} page={114}>Last</Link>
             </ul>
         </div>        
     )
