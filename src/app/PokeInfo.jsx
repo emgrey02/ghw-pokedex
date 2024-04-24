@@ -50,6 +50,7 @@ export default function PokeInfo({ currentPoke, tr, mo }) {
                     <div className='flex flex-col gap-8'>
                         <h2 className='text-zinc-900 dark:text-zinc-300 text-2xl md:text-3xl font-bold transition-all'>{currentPoke.species.name.charAt(0).toUpperCase() + currentPoke.species.name.slice(1)}</h2>
                         <div className='flex flex-col gap-2'>
+                            <h4>Type</h4>
                             {currentPoke.types.map((type, index) =>
                             (
                             <div className='w-min flex flex-col items-center rounded-full border-2 border-indigo-900 dark:border-indigo-300' key={index}>

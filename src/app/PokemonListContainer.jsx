@@ -1,7 +1,7 @@
 'use client'
 import { getCurrentPokemon } from '@/app/pokeService';
 import Button from '@/app/Button';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import PokemonSearch from '@/app/PokemonSearch';
 import PokemonList from '@/app/PokemonList';
@@ -101,7 +101,7 @@ export default function PokemonListContainer({ onDataFromChild, page }) {
     )
 
     return (
-        <>
+        <Suspense>
             <PokemonSearch onDataFromChild={showPokeInfoFromSearch} />
             <div className={`w-full flex justify-between items-center place-self-center md:hidden`}>
                 <PaginationBar page={page} key={page} />
@@ -119,6 +119,6 @@ export default function PokemonListContainer({ onDataFromChild, page }) {
             <div className={`w-full flex justify-between items-center place-self-center`}>
                 <PaginationBar page={page} key={page} />
             </div>
-        </>
+        </Suspense>
     )
 }
