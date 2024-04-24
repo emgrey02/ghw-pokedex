@@ -8,7 +8,7 @@ import { useSearchParams } from 'next/navigation';
 
 export default function Page() {
     const params = useSearchParams();
-    const pageNum = params.get('page');
+    const pageNum = params.get('page') || 0;
 
     const [isInfoShowing, setIsInfoShowing] = useState(false);
     
@@ -17,7 +17,7 @@ export default function Page() {
     }
 
     return (
-        <Suspense>
+        <Suspense fallback={Loading}>
             <main id='main' className={`grid grid-cols-1 w-full md:h-dvh md:min-h-dvh text-slate-800 dark:text-slate-200 bg-gradient-to-r from-cyan-300 to-violet-400 dark:from-cyan-950 dark:to-slate-900 px-4 py-8 md:px-16 ${isInfoShowing ? 'yes-info' : 'no-info'}`}> 
                 <div className='flex gap-2 items-center'>
                     <Image width='80' height='80' alt='pokedex icon' src={dex}/>

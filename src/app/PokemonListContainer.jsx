@@ -1,6 +1,6 @@
 'use client'
 import { getCurrentPokemon } from '@/app/pokeService';
-import Button from '@/app/Button';
+import Loading from '@/app/loading';
 import { useEffect, useState, useRef, useCallback, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import PokemonSearch from '@/app/PokemonSearch';
@@ -101,21 +101,16 @@ export default function PokemonListContainer({ onDataFromChild, page }) {
     )
 
     return (
-        <Suspense>
+        <Suspense fallback={Loading}>
             <PokemonSearch onDataFromChild={showPokeInfoFromSearch} />
             <div className={`w-full flex justify-between items-center place-self-center md:hidden`}>
                 <PaginationBar page={page} key={page} />
             </div>
-            {isLoading ? (
-                <div id='loadingComp' className='w-full h-full grid gap-2 place-items-center'>
-                    <div className='flex gap-2 place-items-center'>
-                        <span className='animate-spin w-6 h-6 rounded-full border-t-2 border-r-2 border-zinc-600 dark:border-zinc-300 '></span>
-                        <p>Loading...</p>
-                    </div>
-                </div>
-            ) : (
+            {/* {isLoading ? (
+                <Loading />
+            ) : ( */}
                     <PokemonList pokemonList={pokemonList} showPokeInfo={showPokeInfo} />
-            )}
+            {/* )} */}
             <div className={`w-full flex justify-between items-center place-self-center`}>
                 <PaginationBar page={page} key={page} />
             </div>
