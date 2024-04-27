@@ -55,6 +55,7 @@ export default function PaginationBar() {
             <ul className='grid grid-cols-11 place-items-center h-min w-full'> 
                 <Link className='hover:bg-indigo-400 hover:text-slate-800 hover:font-bold py-2 rounded-lg transition-all disabled:text-slate-300' href={`/?page=1`} page={1} disabled={isBackDisabled}>
                     <svg
+                        title='Go to first page'
                         xmlns="http://www.w3.org/2000/svg"
                         width="40"
                         height="40"
@@ -72,6 +73,7 @@ export default function PaginationBar() {
                 </Link>
                 <Button id='prev' onClick={changePage} disabled={isBackDisabled}>
                     <svg
+                        title='go to previous page'
                         xmlns="http://www.w3.org/2000/svg"
                         width="20"
                         height="20"
@@ -95,6 +97,7 @@ export default function PaginationBar() {
                 <div className={`${currentPage >= 111 ? 'invisible' : ''}`}>...</div>
                 <Button id='next' onClick={changePage} disabled={isNextDisabled}>
                     <svg
+                        title='go to next page'
                         xmlns="http://www.w3.org/2000/svg"
                         width="20"
                         height="20"
@@ -111,6 +114,7 @@ export default function PaginationBar() {
                 </Button>
                 <Link className={`hover:bg-indigo-400 hover:text-slate-800 hover:font-bold py-2 rounded-lg transition-all disabled:text-slate-300`} href={`/?page=114`} disabled={isNextDisabled} page={114}>
                     <svg
+                        title='go to last page'
                         xmlns="http://www.w3.org/2000/svg"
                         width="40"
                         height="40"
