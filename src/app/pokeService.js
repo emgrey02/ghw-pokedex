@@ -46,15 +46,30 @@ export async function getAllPokemon(url) {
     return fetchPokemonData(pokemon.results);
 }
 
-export async function getPokemonFromName(formData) {
-    const rawFormData = {
-        name: formData.get('name')
+// export async function getPokemonFromName(formData) {
+//     const rawFormData = {
+//         name: formData.get('name')
+//     }
+
+//     const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${rawFormData.name}`);
+
+//     if (!res.ok) {
+//         throw new Error('failed to fetch individual pokemon');
+//     }
+//     const pokemon = await res.json();
+//     return pokemon;
+// }
+
+export async function getPokemonFromSearch(name) {
+
+    if (name === '') {
+        return 'invalid search';
     }
 
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${rawFormData.name}`);
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
 
     if (!res.ok) {
-        throw new Error('failed to fetch individual pokemon');
+        return `That's not a pokemon. Try searching again.`;
     }
     const pokemon = await res.json();
     return pokemon;

@@ -1,109 +1,120 @@
 'use client'
 import { getCurrentPokemon } from '@/app/pokeService';
 import Loading from '@/app/loading';
-import { useEffect, useState, useRef, useCallback, Suspense } from 'react';
+import { useEffect, useState, useRef, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import PokemonSearch from '@/app/PokemonSearch';
 import PokemonList from '@/app/PokemonList';
 import PokeInfo from '@/app/PokeInfo';
 import PaginationBar from '@/app/PaginationBar';
+import { getPokemonFromSearch } from '@/app/pokeService';
 
-export default function PokemonListContainer({ onDataFromChild, page }) {
+export default function PokemonListContainer({page, setInfo}) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const createQueryString = useCallback((name, value) => {
-        const params = new URLSearchParams(searchParams);
-        params.set(name, value);
-
-        return params.toString()
-    }, [searchParams])
-
     const [pokemonList, setPokemonList] = useState([]);
     const [isLoading, setLoading] = useState(true);
     const [showInfo, setShowInfo] = useState(false);
-
-    const [isInfoMounted, setIsInfoMounted] = useState(false);
-    const hasInfoTransitionedIn = useMountTransition(isInfoMounted, 500);
-
     const clickedPoke = useRef();
 
-    const sendDataToParent = (data) => {
-        onDataFromChild(data);
+    const params = new URLSearchParams(searchParams);
+
+    let currentPage = searchParams.get('page') || page;
+
+    const setTheInfo = (isInfoShowing) => {
+        setInfo(isInfoShowing);
+        setShowInfo(isInfoShowing);
+    }
+
+    const setQuery = (name) => {
+        params.set('query', name);
+        router.push(pathname + '?' + params.toString());
+        
+        setTheInfo(true);
     }
 
     const showPokeInfoFromSearch = (data) => {
         clickedPoke.current = data;
-        setShowInfo(true);
-        setIsInfoMounted(true);
-        sendDataToParent(true);
+        setQuery(data.name)
     }
     
     const showPokeInfo = (e) => {
         let clickedPokeIndex = e.currentTarget.getAttribute('data-order');
         clickedPoke.current = pokemonList[clickedPokeIndex];
-        setShowInfo(true);
-        setIsInfoMounted(true);
-        sendDataToParent(true);
+        setQuery(clickedPoke.current.name)
     };
 
     const hidePokeInfo = () => {
-        setShowInfo(false);
-        setIsInfoMounted(false);
-        sendDataToParent(false);
+        console.log('hiding poke info')
+        params.delete('query');
+        router.push(pathname + '?' + params.toString());
+        
+        setTheInfo(false);
     }
 
-    function useMountTransition(isInfoMounted, unmountDelay) {
-        const [hasInfoTransitionedIn, setHasInfoTransitionedIn] = useState(false);
-
-        useEffect(() => {
-            let timeoutId;
-
-            if (isInfoMounted && !hasInfoTransitionedIn) {
-                setHasInfoTransitionedIn(true);
-            } else if (!isInfoMounted && setHasInfoTransitionedIn) {
-                timeoutId = setTimeout(() => setHasInfoTransitionedIn(false), unmountDelay)
-            }
-
-            return () => {
-                clearTimeout(timeoutId);
-            }
-        }, [unmountDelay, isInfoMounted, hasInfoTransitionedIn])
-        return hasInfoTransitionedIn;
+    async function setCurrentPoke() {
+        let pokeName = params.get('query');
+        let thePokemon = await getPokemonFromSearch(pokeName);
+        if (typeof thePokemon === 'object') {
+            clickedPoke.current = thePokemon;
+        } else return thePokemon;
     }
+
+    useEffect(() => {
+        if (params.has('query')) {
+            if (clickedPoke.current == undefined) {
+                console.log('clickedpoke is undefined or null');
+                setCurrentPoke().then((poke) => {
+                    if (typeof poke === 'string') {
+                        router.push(pathname);
+                        setTheInfo(false);
+                    } else {
+                        setTheInfo(true);
+                    }
+                });
+            } else {
+                setTheInfo(true);
+            }
+        } else {
+            setTheInfo(false);
+        }
+    }, [params])
 
     useEffect( () => {
         setLoading(true);
 
-        getCurrentPokemon(page).then(async (data) => {
-            console.log(data);
+        getCurrentPokemon(currentPage).then(async (data) => {
             setPokemonList(data);
             setLoading(false);
         }).catch(error => console.error(error));
-        
-    }, [page])
 
-    if (showInfo && (hasInfoTransitionedIn || isInfoMounted)) return (
-            <div id='theInfo' className={`place-self-center flex flex-col gap-y-4 $`}>
-                <button className='z-20 dark:text-slate-800 font-semibold dark:hover:text-slate-200 bg-indigo-900/60 hover:bg-indigo-900/30 text-slate-100 dark:bg-indigo-400 dark:hover:bg-indigo-400/50 rounded transition-all focus:outline-none focus:ring-4 ring-indigo-950 border border-slate-800 dark:border-slate-600 px-7 py-3' onClick={hidePokeInfo}>Back</button>
-                <PokeInfo tr={hasInfoTransitionedIn} mo={isInfoMounted} currentPoke={clickedPoke.current} />
-            </div>
+    }, [currentPage])
+
+    if (showInfo) return (
+        <div id='theInfo' className={`place-self-center flex flex-col gap-y-4 $`}>
+            <button className='z-20 dark:text-slate-800 font-semibold dark:hover:text-slate-200 bg-indigo-900/60 hover:bg-indigo-900/30 text-slate-100 dark:bg-indigo-400 dark:hover:bg-indigo-400/50 rounded transition-all focus:outline-none focus:ring-4 ring-indigo-950 border border-slate-800 dark:border-slate-600 px-7 py-3' onClick={hidePokeInfo}>Back</button>
+            <PokeInfo currentPoke={clickedPoke.current} />
+        </div>
     )
 
     return (
         <Suspense fallback={Loading}>
             <PokemonSearch onDataFromChild={showPokeInfoFromSearch} />
+            
             <div className={`w-full flex justify-between items-center place-self-center md:hidden`}>
-                <PaginationBar page={page} key={page} />
+                <PaginationBar page={currentPage} key={currentPage} />
             </div>
+
             {isLoading ? (
                 <Loading />
             ) : (
-                    <PokemonList pokemonList={pokemonList} showPokeInfo={showPokeInfo} />
+                <PokemonList pokemonList={pokemonList} showPokeInfo={showPokeInfo} />
             )}
+
             <div className={`w-full flex justify-between items-center place-self-center`}>
-                <PaginationBar page={page} key={page} />
+                <PaginationBar page={currentPage} key={currentPage} />
             </div>
         </Suspense>
     )
