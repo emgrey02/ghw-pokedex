@@ -24,7 +24,7 @@ export default function PaginationBar() {
     }, [currentPage])
 
     const changePage = (e) => {
-        let button = e.target.id;
+        let button = e.currentTarget.id;
 
         if (Number(currentPage) < 1) {
             setBackDisability(true);

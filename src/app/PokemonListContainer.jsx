@@ -1,13 +1,12 @@
 'use client'
-import { getCurrentPokemon } from '@/app/pokeService';
-import Loading from '@/app/loading';
+import { getCurrentPokemon, getPokemonFromSearch } from '@/app/pokeService';
 import { useEffect, useState, useRef, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import Loading from '@/app/loading';
 import PokemonSearch from '@/app/PokemonSearch';
 import PokemonList from '@/app/PokemonList';
 import PokeInfo from '@/app/PokeInfo';
 import PaginationBar from '@/app/PaginationBar';
-import { getPokemonFromSearch } from '@/app/pokeService';
 
 export default function PokemonListContainer({page, setInfo}) {
     const router = useRouter();
@@ -102,7 +101,7 @@ export default function PokemonListContainer({page, setInfo}) {
     return (
         <Suspense fallback={Loading}>
             <PokemonSearch onDataFromChild={showPokeInfoFromSearch} />
-            
+
             <div className={`w-full flex justify-between items-center place-self-center md:hidden`}>
                 <PaginationBar page={currentPage} key={currentPage} />
             </div>
