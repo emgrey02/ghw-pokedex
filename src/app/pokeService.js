@@ -25,9 +25,15 @@ async function fetchPokemonData(pokemonList) {
 }
 
 export async function getCurrentPokemon(pageNum) {
-    const offset = Number(pageNum ?? '0') - 1 + '0'; //We're getting 10 pokemon at a time, easier to just add a 0 on to the string
-    const url = `https://pokeapi.co/api/v2/pokemon/?limit=15&offset=${offset}`;
+    let offset;
     
+    if (pageNum >= 2) {
+        offset = Number(pageNum - 1) * 20;
+    } else {
+        offset = 0;
+    }
+    console.log(offset);
+    const url = `https://pokeapi.co/api/v2/pokemon/?limit=20&offset=${offset}`;
 
     const pokemonUrls = await fetch(url).then((res) => res.json());
     const pokemon = await Promise.all(
@@ -46,22 +52,7 @@ export async function getAllPokemon(url) {
     return fetchPokemonData(pokemon.results);
 }
 
-// export async function getPokemonFromName(formData) {
-//     const rawFormData = {
-//         name: formData.get('name')
-//     }
-
-//     const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${rawFormData.name}`);
-
-//     if (!res.ok) {
-//         throw new Error('failed to fetch individual pokemon');
-//     }
-//     const pokemon = await res.json();
-//     return pokemon;
-// }
-
 export async function getPokemonFromSearch(name) {
-
     if (name === '') {
         return 'invalid search';
     }
