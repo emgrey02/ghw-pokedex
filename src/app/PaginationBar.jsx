@@ -17,7 +17,7 @@ export default function PaginationBar() {
         if (Number(currentPage) <= 1) {
             setBackDisability(true); 
             return;
-        } else if (Number(currentPage) >= 65) {
+        } else if (Number(currentPage) >= 82) {
             setNextDisability(true);
             return;
         }
@@ -29,7 +29,7 @@ export default function PaginationBar() {
         if (Number(currentPage) < 1) {
             setBackDisability(true);
             return;
-        } else if (Number(currentPage) > 65) {
+        } else if (Number(currentPage) > 82) {
             setNextDisability(true);
             return;
         }
@@ -46,7 +46,7 @@ export default function PaginationBar() {
     const pages = Array.from({ length: 5 }, (_, i) => {
         let pageNum = Number(currentPage);
         if (pageNum <= 3) return i + 1;
-        if (pageNum >= 63) return i + 61;
+        if (pageNum >= 80) return i + 78;
         else return (i-1) - (pageNum === 1 ? 0 : 1) + pageNum;
     });
 
@@ -100,7 +100,7 @@ export default function PaginationBar() {
                     </li>
                 ))}
                 <li>
-                    <div className={`${currentPage >= 63 ? 'invisible' : ''}`}>...</div>
+                    <div className={`${currentPage >= 80 ? 'invisible' : ''}`}>...</div>
                 </li>
                 <li>
                     <Button id='next' onClick={changePage} disabled={isNextDisabled}>
@@ -122,7 +122,7 @@ export default function PaginationBar() {
                     </Button>
                 </li>
                 <li className='hover:bg-indigo-900/60 dark:hover:bg-indigo-400 rounded transition'>
-                    <Link className={`p-2 stroke-slate-700 dark:stroke-slate-400 hover:stroke-slate-900 transition`} href={`/?page=65`} page={65}>
+                    <Link className={`p-2 stroke-slate-700 dark:stroke-slate-400 hover:stroke-slate-900 transition`} href={`/?page=82`} page={82}>
                         <svg
                             title='go to last page'
                             xmlns="http://www.w3.org/2000/svg"
