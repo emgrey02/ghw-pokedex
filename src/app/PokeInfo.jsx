@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 export default function PokeInfo({ currentPoke }) {
     const [playing, setPlaying] = useState(false);
+    const [url, setUrl] = useState(null);
     
     useEffect(() => {
         let audioElement = document.querySelector('audio');
@@ -15,8 +16,9 @@ export default function PokeInfo({ currentPoke }) {
     }, [])
     
     function playAudio(e) {
-        setPlaying(true);
+        setUrl(currentPoke.cries.latest);
         e.currentTarget.firstChild.play();
+        setPlaying(true);
     }
     
     
@@ -25,8 +27,7 @@ export default function PokeInfo({ currentPoke }) {
             <div id='card' className={`place-self-center z-20 text-zinc-700 dark:text-gray-400 w-fit h-min flex flex-col gap-4 p-8 bg-zinc-400/50 dark:bg-zinc-600/50 outline outline-slate-600 shadow-xl shadow-slate-900/30 rounded-md`}>
                 <div className='grid grid-cols-2 h-min w-full gap-6 pb-10'>
                     <div className='flex flex-col ring-1 ring-indigo-900 dark:ring-indigo-300 p-4 self-start'>
-                        <button title='Hear My Cry!' className='hover:bg-gray-100/10 rounded-full flex justify-center transition-all' onClick={playAudio}>
-                            <audio src={currentPoke.cries.latest}></audio>
+                        <button title='Hear My Cry!' className='rounded-full flex flex-col items-center justify-center transition-all'>
                             {currentPoke.sprites.front_default || currentPoke.sprites.front_shiny ? (
                                 <Image
                                     className={playing ? 'animate-ping' : ''}
@@ -37,7 +38,9 @@ export default function PokeInfo({ currentPoke }) {
                                 />
                             ) : <div className='w-24 h-24 bg-gray-500/60' title='no pokemon image found'></div>
                             }
-                            
+                            <audio controls className='py-2'>
+                                <source src={url} type="audio/ogg" />
+                            </audio>
                         </button>
                         <div className='flex flex-col items-center'>
                             <span className='text-xs md:text-sm text-center transition-all'>Click me to hear my cry!</span>
