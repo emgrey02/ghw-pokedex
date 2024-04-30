@@ -3,7 +3,7 @@ import Image from 'next/image';
 export default function PokemonList({ pokemonList, showPokeInfo }) {
     
     return (
-        <ul id='listComp' className={`w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 overflow-scroll ring-2 ring-indigo-300 dark:ring-indigo-950 my-4 py-2 rounded`}>
+        <ul id='listComp' className={`w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 overflow-scroll ring-2 ring-indigo-300 dark:ring-indigo-950 my-4 py-2 rounded`}>
             {
                 pokemonList.map((poke, index) =>
                 (

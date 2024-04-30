@@ -27,13 +27,14 @@ async function fetchPokemonData(pokemonList) {
 export async function getCurrentPokemon(pageNum) {
     let offset;
     
-    if (pageNum >= 2) {
-        offset = Number(pageNum - 1) * 20;
+    if (pageNum > 1) {
+        offset = Number(pageNum - 1) * 16;
     } else {
         offset = 0;
     }
-    console.log(offset);
-    const url = `https://pokeapi.co/api/v2/pokemon/?limit=20&offset=${offset}`;
+    
+    const url = `https://pokeapi.co/api/v2/pokemon/?limit=16&offset=${offset}`;
+    console.log(url);
 
     const pokemonUrls = await fetch(url).then((res) => res.json());
     const pokemon = await Promise.all(
