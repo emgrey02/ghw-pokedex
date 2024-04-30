@@ -39,7 +39,7 @@ export default function PokeInfo({ currentPoke }) {
                             ) : <div className='w-24 h-24 bg-gray-500/60' title='no pokemon image found'></div>
                             }
                             <audio controls className='py-2 w-36'>
-                                <source src={url} type="audio/ogg" />
+                                <source src={currentPoke.cries.latest} type="audio/ogg" />
                             </audio>
                         </button>
                         <div className='flex flex-col items-center'>
