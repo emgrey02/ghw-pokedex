@@ -5,7 +5,7 @@ import { useNowPlaying } from 'react-nowplaying';
 
 export default function PokeInfo({ currentPoke }) {
     const [playing, setPlaying] = useState(false);
-    const { play } = useNowPlaying();
+    const { play, uid, stop, player } = useNowPlaying();
     
     useEffect(() => {
         let audioElement = document.querySelector('audio');
@@ -16,9 +16,12 @@ export default function PokeInfo({ currentPoke }) {
         }
     }, [])
     
-    function playAudio(e) {
+    function playAudio() {
         setPlaying(true);
-        play(currentPoke.cries.latest, "audio/ogg");
+        play(currentPoke.cries.latest, "audio/ogg", "url");
+        if (player.duration > 0 && !player.paused) {
+            setPlaying(true);
+        }
     }
     
     
@@ -27,7 +30,7 @@ export default function PokeInfo({ currentPoke }) {
             <div id='card' className={`place-self-center z-20 text-zinc-700 dark:text-gray-400 w-fit h-min flex flex-col gap-4 p-8 bg-zinc-400/50 dark:bg-zinc-600/50 outline outline-slate-600 shadow-xl shadow-slate-900/30 rounded-md`}>
                 <div className='grid grid-cols-2 h-min w-full gap-6 pb-10'>
                     <div className='flex flex-col ring-1 ring-indigo-900 dark:ring-indigo-300 p-4 self-start'>
-                        <button title='Hear My Cry!' className=' hover:bg-gray-500/30 rounded-full flex flex-col items-center justify-center transition-all' onClick={(e)=> playAudio(e)}>
+                        <button title='Hear My Cry!' className=' hover:bg-gray-500/30 rounded-full flex flex-col items-center justify-center transition-all' onClick={()=> (uid === "url" ? stop() : playAudio())}>
                             {currentPoke.sprites.front_default || currentPoke.sprites.front_shiny ? (
                                 <Image
                                     className={playing ? 'animate-ping' : ''}
