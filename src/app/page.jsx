@@ -4,8 +4,7 @@ import Loading from '@/app/loading';
 import Image from 'next/image';
 import dex from '../../public/pokeDEX.png';
 
-import { useState, Suspense, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useState, Suspense } from 'react';
 
 export default function Page(searchParams) {
     const pageNum = searchParams.page || 1;

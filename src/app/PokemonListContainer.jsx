@@ -2,6 +2,7 @@
 import { getCurrentPokemon, getPokemonFromSearch } from '@/app/pokeService';
 import { useEffect, useState, useRef, Suspense } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { NowPlayingContextProvider } from 'react-nowplaying';
 import Loading from '@/app/loading';
 import PokemonSearch from '@/app/PokemonSearch';
 import PokemonList from '@/app/PokemonList';
@@ -94,7 +95,9 @@ export default function PokemonListContainer({page, setInfo}) {
     if (showInfo) return (
         <div id='theInfo' className={`place-self-center flex flex-col gap-y-4 $`}>
             <button className='z-20 dark:text-slate-800 font-semibold dark:hover:text-slate-200 bg-indigo-900/60 hover:bg-indigo-900/30 text-slate-100 dark:bg-indigo-400 dark:hover:bg-indigo-400/50 rounded transition-all focus:outline-none focus:ring-4 ring-indigo-950 border border-slate-800 dark:border-slate-600 px-7 py-3' onClick={hidePokeInfo}>Back</button>
-            <PokeInfo currentPoke={clickedPoke.current} />
+            <NowPlayingContextProvider>
+                <PokeInfo currentPoke={clickedPoke.current} />
+            </NowPlayingContextProvider>
         </div>
     )
 
