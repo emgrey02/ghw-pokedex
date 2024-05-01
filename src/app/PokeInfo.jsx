@@ -16,12 +16,12 @@ export default function PokeInfo({ currentPoke }) {
         }
     }, [])
     
-    function playAudio() {
-        setPlaying(true);
+    function playAudio() { 
+        player.load();
         play(currentPoke.cries.latest, "audio/ogg", "url");
-        if (player.duration > 0 && !player.paused) {
-            setPlaying(true);
-        }
+        console.log(player.currentSrc);
+        console.log(player.canPlayType('audio/ogg'));
+        
     }
     
     
