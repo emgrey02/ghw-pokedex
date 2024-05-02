@@ -1,0 +1,9 @@
+{
+    "tabWidth": 4,
+    "singleQuote": true,
+    "semi":true,
+    "experimentalTernaries": true,
+    "jsxSingleQuote": true,
+    "endOfLine": "lf",
+    "singleAttributePerLine": true
+}

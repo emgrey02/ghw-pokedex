@@ -1,8 +1,8 @@
-'use server'
+'use server';
 
 export async function getPokemon(url) {
     const res = await fetch(url, {
-        method: 'get'
+        method: 'get',
     });
     if (!res.ok) {
         throw new Error('failed to fetch general pokemon list data');
@@ -26,22 +26,22 @@ async function fetchPokemonData(pokemonList) {
 
 export async function getCurrentPokemon(pageNum) {
     let offset;
-    
+
     if (pageNum > 1) {
         offset = Number(pageNum - 1) * 16;
     } else {
         offset = 0;
     }
-    
+
     const url = `https://pokeapi.co/api/v2/pokemon/?limit=16&offset=${offset}`;
     console.log(url);
 
     const pokemonUrls = await fetch(url).then((res) => res.json());
     const pokemon = await Promise.all(
-        pokemonUrls.results.map((p) => getOnePokemon(p.url))
+        pokemonUrls.results.map((p) => getOnePokemon(p.url)),
     );
     return pokemon;
-};
+}
 
 export async function getOnePokemon(url) {
     const res = await fetch(url);
