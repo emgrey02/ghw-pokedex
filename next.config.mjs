@@ -6,10 +6,10 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: 'raw.githubusercontent.com',
                 port: '',
-                pathname: '/PokeAPI/**'
-            }
-        ]
-    }
+                pathname: '/PokeAPI/**',
+            },
+        ],
+    },
 };
 
 export default nextConfig;

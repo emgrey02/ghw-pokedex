@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { getPokemonFromSearch } from './pokeService';
 
 export default function PokemonSearch({ onDataFromChild }) {

@@ -1,4 +1,5 @@
 'use server';
+import axios from 'axios';
 
 export async function getPokemon(url) {
     const res = await fetch(url, {
@@ -65,4 +66,88 @@ export async function getPokemonFromSearch(name) {
     }
     const pokemon = await res.json();
     return pokemon;
+}
+
+const freeconvert = axios.create({
+    baseURL: 'https://api.freeconvert.com/v1',
+    headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+    },
+});
+
+export async function convert(fileURL) {
+    try {
+        const jobResponse = await freeconvert.post('/process/jobs', {
+            tasks: {
+                myImport1: {
+                    operation: 'import/url',
+                    url: fileURL,
+                    filename: 'pokecry.ogg',
+                },
+                myConvert1: {
+                    operation: 'convert',
+                    input: 'myImport1',
+                    input_format: 'ogg',
+                    output_format: 'mp3',
+                },
+                myExport1: {
+                    operation: 'export/url',
+                    input: 'myConvert1',
+                },
+            },
+        });
+
+        const jobId = jobResponse.data.id;
+        console.log('created job', jobId);
+
+        const job = await waitForJobByPolling(jobId);
+
+        if (job.status === 'completed') {
+            console.log('Job completed.');
+            const exportTask = job.tasks.find((t) => t.name === 'myExport1');
+            return exportTask.result.url;
+        } else {
+            console.log(
+                `Job failed. [${job.result.errorCode}] - ${job.result.msg.trim()}`,
+            );
+        }
+
+        for (const t of job.tasks) {
+            if (t.status === 'completed') {
+                console.log(
+                    `Task ${t.name} completed. result.url: ${t.result.url}`,
+                );
+            } else {
+                console.log(
+                    `Task ${t.name} failed. [${t.result.errorCode}] - ${t.result.msg.trim()}`,
+                );
+            }
+        }
+
+        async function waitForJobByPolling(jobId) {
+            for (let i = 0; i < 10; i++) {
+                await waitForSeconds(2);
+                const jobGetResponse = await freeconvert.get(
+                    `/process/jobs/${jobId}`,
+                );
+
+                const job = jobGetResponse.data;
+                if (job.status === 'completed' || job.status === 'failed') {
+                    // Return the latest job information.
+                    return job;
+                }
+            }
+
+            throw new Error('Poll timeout');
+        }
+
+        async function waitForSeconds(seconds) {
+            await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+        }
+    } catch (error) {
+        console.log(`!!!ERROR!!! ${error.message} !!!ERROR!!!`);
+        return null;
+    }
 }

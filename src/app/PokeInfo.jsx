@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { mixAudio } from 'ffmpeg-audio-mixer';
+import { useState, useEffect, useRef } from 'react';
 import { useNowPlaying } from 'react-nowplaying';
+import { convert } from './pokeService';
 
 export default function PokeInfo({ currentPoke }) {
     const [cry, setCry] = useState(null);
@@ -9,25 +9,25 @@ export default function PokeInfo({ currentPoke }) {
     const { play, uid, stop, player } = useNowPlaying();
 
     useEffect(() => {
+        convert(currentPoke.cries.latest).then((data) => {
+            if (data === null) {
+                setCry(currentPoke.cries.latest);
+            } else {
+                setCry(data);
+            }
+        });
+
         let audioElement = document.querySelector('audio');
         audioElement.addEventListener('ended', () => setPlaying(false));
-
-        async function convertCryFile() {
-            setCry(mixAudio(currentPoke.cries.latest).toFile('cry.mp3'));
-        }
-
-        convertCryFile();
 
         return () => {
             audioElement.removeEventListener('ended', () => setPlaying(false));
         };
-    });
+    }, []);
 
     function playAudio() {
         player.load();
         play(cry, 'audio/mp3', 'url');
-        console.log(player.currentSrc);
-        console.log(player.canPlayType('audio/mp3'));
     }
 
     return (
