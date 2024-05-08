@@ -1,38 +1,28 @@
 'use client';
-import { getCurrentPokemon, getPokemonFromSearch } from '@/app/pokeService';
-import { useEffect, useState, useRef, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { NowPlayingContextProvider } from 'react-nowplaying';
 import Loading from '@/app/loading';
+import PokeInfo from './PokeInfo';
+import PokemonList from './PokemonList';
 import PokemonSearch from '@/app/PokemonSearch';
-import PokemonList from '@/app/PokemonList';
-import PokeInfo from '@/app/PokeInfo';
+
 import PaginationBar from '@/app/PaginationBar';
 
-export default function PokemonListContainer({ page, setInfo }) {
+export default function PokemonListContainer({ pokemonList }) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-
-    const [pokemonList, setPokemonList] = useState([]);
-    const [isLoading, setLoading] = useState(true);
-    const [showInfo, setShowInfo] = useState(false);
-    const clickedPoke = useRef();
-
     const params = new URLSearchParams(searchParams);
 
-    let currentPage = searchParams.get('page') || page;
+    const clickedPoke = useRef(null);
 
-    const setTheInfo = (isInfoShowing) => {
-        setInfo(isInfoShowing);
-        setShowInfo(isInfoShowing);
-    };
+    const [showInfo, setShowInfo] = useState(false);
 
     const setQuery = (name) => {
+        const params = new URLSearchParams(searchParams);
+        console.log('setting query');
         params.set('query', name);
         router.push(pathname + '?' + params.toString());
-
-        setTheInfo(true);
     };
 
     const showPokeInfoFromSearch = (data) => {
@@ -40,106 +30,86 @@ export default function PokemonListContainer({ page, setInfo }) {
         setQuery(data.name);
     };
 
-    const showPokeInfo = (e) => {
-        let clickedPokeIndex = e.currentTarget.getAttribute('data-order');
-        clickedPoke.current = pokemonList[clickedPokeIndex];
-        setQuery(clickedPoke.current.name);
-    };
+    function setSelectedPoke(poke) {
+        console.log('setting selected poke');
+        clickedPoke.current = poke;
+    }
 
-    const hidePokeInfo = () => {
-        console.log('hiding poke info');
+    function hidePokeInfo() {
+        console.log('removing query');
         params.delete('query');
-        router.push(pathname + '?' + params.toString());
-
-        setTheInfo(false);
-    };
-
-    async function setCurrentPoke() {
-        let pokeName = params.get('query');
-        let thePokemon = await getPokemonFromSearch(pokeName);
-        if (typeof thePokemon === 'object') {
-            clickedPoke.current = thePokemon;
-        } else return thePokemon;
+        router.push(pathname);
     }
 
     useEffect(() => {
-        if (params.has('query')) {
-            if (clickedPoke.current == undefined) {
-                console.log('clickedpoke is undefined or null');
-                setCurrentPoke().then((poke) => {
-                    if (typeof poke === 'string') {
-                        router.push(pathname);
-                        setTheInfo(false);
-                    } else {
-                        setTheInfo(true);
-                    }
-                });
-            } else {
-                setTheInfo(true);
+        if (params.has('query') && clickedPoke.current === null) {
+            console.log('currentPoke name defined in url');
+            let name = params.get('query');
+            console.log(name);
+
+            async function getPokemonFromSearch(name) {
+                if (name === '') {
+                    return 'invalid search';
+                }
+
+                const res = await fetch(
+                    `https://pokeapi.co/api/v2/pokemon/${name}`,
+                );
+
+                if (!res.ok) {
+                    return `That's not a pokemon. Try searching again.`;
+                }
+                const pokemon = await res.json();
+                return pokemon;
             }
+
+            getPokemonFromSearch(params.get('query')).then((result) => {
+                if (typeof result === 'object') {
+                    console.log(result);
+                    clickedPoke.current = result;
+                }
+            });
+        }
+
+        if (params.has('query')) {
+            setShowInfo(true);
         } else {
-            setTheInfo(false);
+            setShowInfo(false);
         }
     }, [params]);
 
-    useEffect(() => {
-        setLoading(true);
-
-        getCurrentPokemon(currentPage)
-            .then(async (data) => {
-                setPokemonList(data);
-                setLoading(false);
-            })
-            .catch((error) => console.error(error));
-    }, [currentPage]);
-
-    if (showInfo)
-        return (
-            <div
-                id='theInfo'
-                className={`place-self-center flex flex-col gap-y-4 $`}
-            >
-                <button
-                    className='z-20 dark:text-slate-800 font-semibold dark:hover:text-slate-200 bg-indigo-900/60 hover:bg-indigo-900/30 text-slate-100 dark:bg-indigo-400 dark:hover:bg-indigo-400/50 rounded transition-all focus:outline-none focus:ring-4 ring-indigo-950 border border-slate-800 dark:border-slate-600 px-7 py-3'
-                    onClick={hidePokeInfo}
-                >
-                    Back
-                </button>
-                <NowPlayingContextProvider>
-                    <PokeInfo currentPoke={clickedPoke.current} />
-                </NowPlayingContextProvider>
-            </div>
-        );
-
     return (
-        <Suspense fallback={Loading}>
-            <PokemonSearch onDataFromChild={showPokeInfoFromSearch} />
-
-            <div
-                className={`w-full flex justify-between items-center place-self-center md:hidden`}
-            >
-                <PaginationBar
-                    page={currentPage}
-                    key={currentPage}
-                />
-            </div>
-
-            {isLoading ?
-                <Loading />
-            :   <PokemonList
-                    pokemonList={pokemonList}
-                    showPokeInfo={showPokeInfo}
-                />
-            }
-
-            <div
-                className={`w-full flex justify-between items-center place-self-center`}
-            >
-                <PaginationBar
-                    page={currentPage}
-                    key={currentPage}
-                />
-            </div>
-        </Suspense>
+        <>
+            <Suspense fallback={<Loading />}>
+                <PokemonSearch onDataFromChild={showPokeInfoFromSearch} />
+            </Suspense>
+            <>
+                <div
+                    className={`w-full flex justify-between items-center place-self-center md:hidden`}
+                >
+                    <PaginationBar />
+                </div>
+                <Suspense fallback={<Loading />}>
+                    {showInfo ?
+                        <PokeInfo
+                            poke={clickedPoke.current}
+                            hideInfo={hidePokeInfo}
+                            key={clickedPoke.current}
+                        />
+                    :   <PokemonList
+                            pokeList={pokemonList}
+                            setSelectedPoke={setSelectedPoke}
+                        />
+                    }
+                </Suspense>
+                {showInfo || (
+                    <div
+                        className={`w-full flex justify-between items-center place-self-center`}
+                    >
+                        <PaginationBar />
+                    </div>
+                )}
+            </>
+        </>
     );
 }

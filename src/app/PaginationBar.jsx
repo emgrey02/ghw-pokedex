@@ -20,19 +20,14 @@ export default function PaginationBar() {
         } else if (Number(currentPage) >= 82) {
             setNextDisability(true);
             return;
+        } else {
+            setBackDisability(false);
+            setNextDisability(false);
         }
     }, [currentPage]);
 
     const changePage = (e) => {
         let button = e.currentTarget.getAttribute('data-id');
-
-        if (Number(currentPage) < 1) {
-            setBackDisability(true);
-            return;
-        } else if (Number(currentPage) > 82) {
-            setNextDisability(true);
-            return;
-        }
 
         if (button == 'prev') {
             params.set('page', Number(currentPage) - 1);

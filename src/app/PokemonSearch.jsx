@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { getPokemonFromSearch } from './pokeService';
 
 export default function PokemonSearch({ onDataFromChild }) {
     const [errorMessage, setErrorMessage] = useState(null);
@@ -12,9 +11,26 @@ export default function PokemonSearch({ onDataFromChild }) {
 
     async function doTheThing(e) {
         e.preventDefault();
+        async function getPokemonFromSearch(name) {
+            if (name === '') {
+                return 'invalid search';
+            }
+
+            const res = await fetch(
+                `https://pokeapi.co/api/v2/pokemon/${name}`,
+            );
+
+            if (!res.ok) {
+                return `That's not a pokemon. Try searching again.`;
+            }
+            const pokemon = await res.json();
+            return pokemon;
+        }
+
         let pokemon = await getPokemonFromSearch(
             e.currentTarget[0].value.toLowerCase(),
         );
+
         if (typeof pokemon === 'string') {
             setLoading(false);
             setErrorMessage(pokemon);

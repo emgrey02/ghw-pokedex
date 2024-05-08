@@ -1,6 +1,49 @@
-import Image from 'next/image';
+'use client';
+import PokemonButton from './PokemonButton';
+import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
-export default function PokemonList({ pokemonList, showPokeInfo }) {
+export default function PokemonList({ pokeList, setSelectedPoke }) {
+    const searchParams = useSearchParams();
+
+    const [pokemonList, setPokemonList] = useState(pokeList);
+
+    useEffect(() => {
+        let page = searchParams.get('page');
+        console.log(page);
+
+        async function getCurrentPokemon(page) {
+            let offset;
+
+            async function getOnePokemon(url) {
+                const res = await fetch(url);
+                return res.json();
+            }
+
+            if (page > 1) {
+                offset = Number(page - 1) * 16;
+            } else {
+                offset = 0;
+            }
+
+            const url = `https://pokeapi.co/api/v2/pokemon/?limit=16&offset=${offset}`;
+
+            const pokemonUrls = await fetch(url).then((res) => res.json());
+
+            const pokemon = await Promise.all(
+                pokemonUrls.results.map((p) => getOnePokemon(p.url)),
+            );
+            setPokemonList(pokemon);
+        }
+
+        getCurrentPokemon(page);
+    }, [searchParams]);
+
+    function setPoke(poke) {
+        console.log('setting poke from pokemonList');
+        setSelectedPoke(poke);
+    }
+
     return (
         <ul
             id='listComp'
@@ -11,30 +54,11 @@ export default function PokemonList({ pokemonList, showPokeInfo }) {
                     className='flex flex-col justify-between items-center'
                     key={index}
                 >
-                    <button
-                        className='h-full grid place-items-center grid-rows-2 px-3 text-gray-700 dark:text-gray-400  hover:dark:text-gray-300 hover:text-gray-950 hover:font-semibold py-3 hover:ring-slate-500 hover:dark:ring-slate-950/60 rounded-lg hover:shadow-lg hover:shadow-slate-500/60 hover:dark:shadow-slate-900/80 hover:bg-sky-300/40 hover:dark:bg-indigo-900/20 focus:outline-0 focus:ring-2 ring-slate-600 dark:ring-slate-300 transition-all'
-                        onClick={showPokeInfo}
-                        data-order={index}
-                    >
-                        {(
-                            poke.sprites.front_default ||
-                            poke.sprites.front_shiny
-                        ) ?
-                            <Image
-                                src={
-                                    poke.sprites.front_default ||
-                                    poke.sprites.front_shiny
-                                }
-                                width={100}
-                                height={100}
-                                alt={`picture of ${poke.name}`}
-                            />
-                        :   <div className='w-20 h-20 bg-gray-600/60'></div>}
-                        <h2 className='text-inherit'>
-                            {poke.name.charAt(0).toUpperCase() +
-                                poke.name.slice(1)}
-                        </h2>
-                    </button>
+                    <PokemonButton
+                        poke={poke}
+                        index={index}
+                        sendCurrentPoke={setPoke}
+                    />
                 </li>
             ))}
         </ul>
