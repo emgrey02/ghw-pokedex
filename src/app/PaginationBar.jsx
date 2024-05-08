@@ -16,9 +16,11 @@ export default function PaginationBar() {
     useEffect(() => {
         if (Number(currentPage) <= 1) {
             setBackDisability(true);
+            setNextDisability(false);
             return;
         } else if (Number(currentPage) >= 82) {
             setNextDisability(true);
+            setBackDisability(false);
             return;
         } else {
             setBackDisability(false);

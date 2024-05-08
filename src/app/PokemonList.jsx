@@ -1,5 +1,6 @@
 'use client';
 import PokemonButton from './PokemonButton';
+import Loading from './Loading';
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -7,8 +8,10 @@ export default function PokemonList({ pokeList, setSelectedPoke }) {
     const searchParams = useSearchParams();
 
     const [pokemonList, setPokemonList] = useState(pokeList);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
         let page = searchParams.get('page');
         console.log(page);
 
@@ -34,6 +37,7 @@ export default function PokemonList({ pokeList, setSelectedPoke }) {
                 pokemonUrls.results.map((p) => getOnePokemon(p.url)),
             );
             setPokemonList(pokemon);
+            setLoading(false);
         }
 
         getCurrentPokemon(page);
@@ -42,6 +46,10 @@ export default function PokemonList({ pokeList, setSelectedPoke }) {
     function setPoke(poke) {
         console.log('setting poke from pokemonList');
         setSelectedPoke(poke);
+    }
+
+    if (loading) {
+        return <Loading />;
     }
 
     return (

@@ -40,6 +40,7 @@ export default function PokemonSearch({ onDataFromChild }) {
             return;
         }
         sendDataToParent(pokemon);
+        e.target.childNodes[1].value = '';
     }
 
     return (

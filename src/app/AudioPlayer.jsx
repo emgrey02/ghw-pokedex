@@ -1,11 +1,15 @@
 'use client';
 import axios from 'axios';
-import { useState, useEffect } from 'react';
-import Loading from './loading';
+import { useState, useEffect, useMemo } from 'react';
 
 export default function AudioPlayer({ audio }) {
     const [url, setUrl] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    function playAudio(e) {
+        console.log('setting audio to play');
+        e.currentTarget.firstChild.play();
+    }
 
     const freeconvert = axios.create({
         baseURL: 'https://api.freeconvert.com/v1',
@@ -83,14 +87,14 @@ export default function AudioPlayer({ audio }) {
         doTheJob();
     }, []);
 
-    if (loading) {
-        return <Loading />;
-    } else {
-        return (
-            <audio
-                controls
-                src={url}
-            />
-        );
-    }
+    return (
+        <button
+            className='absolute inset-0 hover:bg-gray-400/30 rounded-full'
+            onClick={playAudio}
+        >
+            {loading ?
+                <></>
+            :   <audio src={url} />}
+        </button>
+    );
 }

@@ -1,5 +1,5 @@
 import PokemonListContainer from '@/app/PokemonListContainer';
-import Loading from '@/app/loading';
+import LoadingPage from '@/app/LoadingPage';
 import Image from 'next/image';
 import dex from '../../public/pokeDEX.png';
 
@@ -52,7 +52,7 @@ export default async function Page(searchParams) {
                 />
                 <h1 className='text-3xl font-medium py-4'>Pokedex</h1>
             </div>
-            <Suspense fallback={<Loading />}>
+            <Suspense fallback={<LoadingPage />}>
                 <PokemonListContainer pokemonList={pokemonList} />
             </Suspense>
         </main>

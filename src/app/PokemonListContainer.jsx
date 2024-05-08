@@ -1,11 +1,10 @@
 'use client';
 import { useEffect, useState, Suspense, useRef } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import Loading from '@/app/loading';
+import Loading from '@/app/Loading';
 import PokeInfo from './PokeInfo';
 import PokemonList from './PokemonList';
 import PokemonSearch from '@/app/PokemonSearch';
-
 import PaginationBar from '@/app/PaginationBar';
 
 export default function PokemonListContainer({ pokemonList }) {
@@ -38,7 +37,7 @@ export default function PokemonListContainer({ pokemonList }) {
     function hidePokeInfo() {
         console.log('removing query');
         params.delete('query');
-        router.push(pathname);
+        router.push(pathname + '?' + params.toString());
     }
 
     useEffect(() => {
@@ -67,11 +66,14 @@ export default function PokemonListContainer({ pokemonList }) {
                 if (typeof result === 'object') {
                     console.log(result);
                     clickedPoke.current = result;
+                    setShowInfo(true);
+                } else {
+                    setShowInfo(false);
+                    hidePokeInfo();
                 }
             });
-        }
-
-        if (params.has('query')) {
+        } else if (params.has('query') && clickedPoke.current) {
+            console.log('showing info');
             setShowInfo(true);
         } else {
             setShowInfo(false);
