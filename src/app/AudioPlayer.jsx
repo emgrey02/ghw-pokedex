@@ -1,6 +1,6 @@
 'use client';
 import axios from 'axios';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function AudioPlayer({ audio }) {
     const [url, setUrl] = useState(null);
@@ -89,7 +89,7 @@ export default function AudioPlayer({ audio }) {
 
     return (
         <button
-            className='absolute inset-0 hover:bg-gray-400/30 rounded-full'
+            className='absolute inset-0 hover:bg-gray-400/30 rounded-full transition'
             onClick={playAudio}
         >
             {loading ?

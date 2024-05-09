@@ -87,10 +87,11 @@ export default function PokemonListContainer({ pokemonList }) {
             </Suspense>
             <>
                 <div
-                    className={`w-full flex justify-between items-center place-self-center md:hidden`}
+                    className={`w-full flex justify-between items-center place-self-center md:hidden ${showInfo ? 'invisible' : ''}`}
                 >
                     <PaginationBar />
                 </div>
+
                 <Suspense fallback={<Loading />}>
                     {showInfo ?
                         <PokeInfo

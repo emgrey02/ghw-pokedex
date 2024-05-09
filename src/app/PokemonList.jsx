@@ -55,11 +55,11 @@ export default function PokemonList({ pokeList, setSelectedPoke }) {
     return (
         <ul
             id='listComp'
-            className={`w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 overflow-scroll ring-2 ring-indigo-300 dark:ring-indigo-950 my-4 py-2 rounded`}
+            className={`w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 overflow-scroll ring-2 ring-indigo-300 dark:ring-indigo-950 my-2 p-2 rounded `}
         >
             {pokemonList.map((poke, index) => (
                 <li
-                    className='flex flex-col justify-between items-center'
+                    className='flex flex-col items-center hover:dark:text-gray-300 hover:text-gray-950 hover:font-semibold py-3 hover:ring-slate-500 hover:dark:ring-slate-950/60 rounded-lg hover:shadow-lg hover:shadow-slate-500/60 hover:dark:shadow-slate-900/80 hover:bg-sky-300/40 hover:dark:bg-indigo-900/20 focus:outline-0 focus:ring-2 ring-slate-600 dark:ring-slate-300 transition-all'
                     key={index}
                 >
                     <PokemonButton

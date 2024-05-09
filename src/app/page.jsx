@@ -40,7 +40,7 @@ export default async function Page(searchParams) {
     return (
         <main
             id='main'
-            className={`grid grid-cols-1 w-full md:h-dvh md:min-h-dvh text-slate-800 dark:text-slate-200 bg-gradient-to-r from-cyan-300 to-violet-400 dark:from-cyan-950 dark:to-slate-900 px-4 py-8 md:px-16 transition-all info`}
+            className={`grid grid-cols-1 w-full h-dvh min-h-dvh text-slate-800 dark:text-slate-200 bg-gradient-to-r from-cyan-300 to-violet-400 dark:from-cyan-950 dark:to-slate-900 px-4 py-8 md:px-16 transition-all info`}
         >
             <div className='flex gap-2 items-center'>
                 <Image

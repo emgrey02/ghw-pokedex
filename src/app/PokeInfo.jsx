@@ -1,8 +1,6 @@
 'use client';
 import Image from 'next/image';
 import AudioPlayer from './AudioPlayer';
-import { Suspense, useState } from 'react';
-import Loading from './Loading';
 
 export default function PokeInfo({ poke, hideInfo }) {
     console.log(poke);
@@ -11,7 +9,7 @@ export default function PokeInfo({ poke, hideInfo }) {
         <>
             <div
                 id='theInfo'
-                className={`place-self-center flex flex-col gap-y-4 $`}
+                className='place-self-center flex flex-col gap-y-4'
             >
                 <button
                     className='z-20 dark:text-slate-800 font-semibold dark:hover:text-slate-200 bg-indigo-900/60 hover:bg-indigo-900/30 text-slate-100 dark:bg-indigo-400 dark:hover:bg-indigo-400/50 rounded transition-all focus:outline-none focus:ring-4 ring-indigo-950 border border-slate-800 dark:border-slate-600 px-7 py-3'
