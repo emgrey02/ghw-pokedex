@@ -1,5 +1,6 @@
 'use client';
-import axios from 'axios';
+// import axios from 'axios';
+import io from 'socket.io-client';
 import { useState, useEffect } from 'react';
 
 export default function AudioPlayer({ audio }) {
@@ -7,81 +8,72 @@ export default function AudioPlayer({ audio }) {
     const [loading, setLoading] = useState(false);
 
     function playAudio(e) {
-        console.log('setting audio to play');
+        console.log('playing audio');
         e.currentTarget.firstChild.play();
     }
 
-    const freeconvert = axios.create({
-        baseURL: 'https://api.freeconvert.com/v1',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+    const baseURL = 'https://api.freeconvert.com/v1';
+    const headers = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
+    };
+    const requestBody = {
+        tasks: {
+            myImport1: {
+                operation: 'import/url',
+                url: audio,
+                filename: 'pokecry.ogg',
+            },
+            myConvert1: {
+                operation: 'convert',
+                input: 'myImport1',
+                input_format: 'ogg',
+                output_format: 'mp3',
+            },
+            myExport1: {
+                operation: 'export/url',
+                input: 'myConvert1',
+            },
         },
-    });
+    };
 
     useEffect(() => {
         async function doTheJob() {
+            let jobId;
             setLoading(true);
-            try {
-                const jobResponse = await freeconvert.post('/process/jobs', {
-                    tasks: {
-                        myImport1: {
-                            operation: 'import/url',
-                            url: audio,
-                            filename: 'pokecry.ogg',
-                        },
-                        myConvert1: {
-                            operation: 'convert',
-                            input: 'myImport1',
-                            input_format: 'ogg',
-                            output_format: 'mp3',
-                        },
-                        myExport1: {
-                            operation: 'export/url',
-                            input: 'myConvert1',
-                        },
-                    },
-                });
 
-                const jobId = jobResponse.data.id;
-                console.log('created job', jobId);
+            const socket = io('https://notification.freeconvert.com/', {
+                transports: ['websocket'],
+                path: '/socket.io',
+                auth: { token: `Bearer ${process.env.ACCESS_TOKEN}` },
+            });
 
-                const job = await waitForJob(jobId);
+            const jobResponse = await fetch(baseURL + '/process/jobs', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(requestBody),
+            })
+                .then((res) => {
+                    jobId = res.data.id;
+                    console.log('created job', jobId);
+                })
+                .catch((error) => console.log(error));
 
-                if (job.status === 'completed') {
-                    console.log('Job completed.');
-                    const exportTask = job.tasks.find(
-                        (t) => t.name === 'myExport1',
-                    );
-                    let url = exportTask.result.url;
-                    setUrl(url);
-                    setLoading(false);
-                    return;
-                } else {
-                    console.log(
-                        `Job failed. [${job.result.errorCode}] - ${job.result.msg.trim()}`,
-                    );
-                    setLoading(false);
-                    return;
-                }
+            socket.on('job_completed', (data) => {
+                console.log('Job completed', data.id);
+                const exportTask = data.tasks.find(
+                    (t) => t.name === 'myExport1',
+                );
+                setUrl(exportTask.result.url);
+                socket.emit('unsubscribe', `job.${data.id}`);
+                socket.disconnect();
+                return;
+            });
 
-                async function waitForJob(jobId) {
-                    const jobGetResponse = await freeconvert.get(
-                        `/process/jobs/${jobId}`,
-                    );
-
-                    const job = jobGetResponse.data;
-                    if (job.status === 'completed' || job.status === 'failed') {
-                        // Return the latest job information.
-                        return job;
-                    }
-                }
-            } catch (error) {
-                console.log(`!!!ERROR!!! ${error} !!!ERROR!!!`);
-                setUrl(audio);
-                setLoading(false);
-            }
+            // Subscribe to events of the created job.
+            console.log('Start waiting for job', jobId);
+            socket.emit('subscribe', `job.${jobId}`);
         }
 
         doTheJob();
