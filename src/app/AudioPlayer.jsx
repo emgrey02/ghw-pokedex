@@ -1,7 +1,7 @@
 'use client';
-// import axios from 'axios';
-import io from 'socket.io-client';
+import axios from 'axios';
 import { useState, useEffect } from 'react';
+import Loading from './Loading';
 
 export default function AudioPlayer({ audio }) {
     const [url, setUrl] = useState(null);
@@ -12,14 +12,16 @@ export default function AudioPlayer({ audio }) {
         e.currentTarget.firstChild.play();
     }
 
-    const baseURL = 'https://api.freeconvert.com/v1';
-    const headers = {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
-    };
+    const freeconvert = axios.create({
+        baseURL: "https://api.freeconvert.com/v1",
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${process.env.NEXT_PUBLIC_ACCESS_TOKEN}`,
+        },
+    });
+
     const requestBody = {
-        tasks: {
             myImport1: {
                 operation: 'import/url',
                 url: audio,
@@ -35,45 +37,55 @@ export default function AudioPlayer({ audio }) {
                 operation: 'export/url',
                 input: 'myConvert1',
             },
-        },
     };
+
+    async function waitForJobByPolling(jobId) {
+        for (let i = 0; i < 10; i++) {
+            await waitForSeconds(2);
+            const jobGetResponse = await freeconvert.get(`/process/jobs/${jobId}`);
+
+            const job = jobGetResponse.data;
+            if (job.status === "completed" || job.status === "failed") {
+                // Return the latest job information.
+                return job;
+            }
+        }
+
+        throw new Error("Poll timeout");
+    }
+    
+    async function waitForSeconds(seconds) {
+        await new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+    }
 
     useEffect(() => {
         async function doTheJob() {
-            let jobId;
             setLoading(true);
 
-            const socket = io('https://notification.freeconvert.com/', {
-                transports: ['websocket'],
-                path: '/socket.io',
-                auth: { token: `Bearer ${process.env.ACCESS_TOKEN}` },
+            const jobResponse = await freeconvert.post('/process/jobs', {
+                tasks: requestBody,
             });
 
-            const jobResponse = await fetch(baseURL + '/process/jobs', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(requestBody),
-            })
-                .then((res) => {
-                    jobId = res.data.id;
-                    console.log('created job', jobId);
-                })
-                .catch((error) => console.log(error));
+            const jobId = jobResponse.data.id;
+            console.log("Created job", jobId);
 
-            socket.on('job_completed', (data) => {
-                console.log('Job completed', data.id);
-                const exportTask = data.tasks.find(
-                    (t) => t.name === 'myExport1',
-                );
+            const job = await waitForJobByPolling(jobId);
+
+            // Print any success or failure results:
+
+            if (job.status === "completed") {
+                console.log("Job completed.");
+                const exportTask = job.tasks.find((t) => t.name === "myExport1");
                 setUrl(exportTask.result.url);
-                socket.emit('unsubscribe', `job.${data.id}`);
-                socket.disconnect();
+                setLoading(false);
                 return;
-            });
+            } else {
+                console.log(`Job failed. [${job.result.errorCode}] - ${job.result.msg.trim()}`);
+                setUrl(audio);
+                setLoading(false);
+                return;
+            }
 
-            // Subscribe to events of the created job.
-            console.log('Start waiting for job', jobId);
-            socket.emit('subscribe', `job.${jobId}`);
         }
 
         doTheJob();
@@ -85,7 +97,7 @@ export default function AudioPlayer({ audio }) {
             onClick={playAudio}
         >
             {loading ?
-                <></>
+                <Loading />
             :   <audio src={url} />}
         </button>
     );

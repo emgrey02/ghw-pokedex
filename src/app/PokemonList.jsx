@@ -12,7 +12,7 @@ export default function PokemonList({ pokeList, setSelectedPoke }) {
 
     useEffect(() => {
         setLoading(true);
-        let page = searchParams.get('page');
+        let page = searchParams.get('page') || 1;
         console.log(page);
 
         async function getCurrentPokemon(page) {
