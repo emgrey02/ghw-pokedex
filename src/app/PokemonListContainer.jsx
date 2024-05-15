@@ -19,7 +19,6 @@ export default function PokemonListContainer({ pokemonList }) {
 
     const setQuery = (name) => {
         const params = new URLSearchParams(searchParams);
-        console.log('setting query');
         params.set('query', name);
         router.push(pathname + '?' + params.toString());
     };
@@ -30,19 +29,16 @@ export default function PokemonListContainer({ pokemonList }) {
     };
 
     function setSelectedPoke(poke) {
-        console.log('setting selected poke');
         clickedPoke.current = poke;
     }
 
     function hidePokeInfo() {
-        console.log('removing query');
         params.delete('query');
         router.push(pathname + '?' + params.toString());
     }
 
     useEffect(() => {
         if (params.has('query') && clickedPoke.current === null) {
-            console.log('currentPoke name defined in url');
             let name = params.get('query');
             console.log(name);
 
@@ -73,7 +69,6 @@ export default function PokemonListContainer({ pokemonList }) {
                 }
             });
         } else if (params.has('query') && clickedPoke.current) {
-            console.log('showing info');
             setShowInfo(true);
         } else {
             setShowInfo(false);
@@ -85,34 +80,33 @@ export default function PokemonListContainer({ pokemonList }) {
             <Suspense fallback={<Loading />}>
                 <PokemonSearch onDataFromChild={showPokeInfoFromSearch} />
             </Suspense>
-            <>
-                <div
-                    className={`w-full flex justify-between items-center place-self-center md:hidden ${showInfo ? 'invisible' : ''}`}
-                >
-                    <PaginationBar />
-                </div>
+            
+            <div
+                className={`w-full flex justify-between items-center place-self-center md:hidden ${showInfo ? 'hidden' : ''}`}
+            >
+                <PaginationBar />
+            </div>
 
-                <Suspense fallback={<Loading />}>
-                    {showInfo ?
-                        <PokeInfo
-                            poke={clickedPoke.current}
-                            hideInfo={hidePokeInfo}
-                            key={clickedPoke.current}
-                        />
-                    :   <PokemonList
-                            pokeList={pokemonList}
-                            setSelectedPoke={setSelectedPoke}
-                        />
-                    }
-                </Suspense>
-                {showInfo || (
-                    <div
-                        className={`w-full flex justify-between items-center place-self-center`}
-                    >
-                        <PaginationBar />
-                    </div>
-                )}
-            </>
+            <Suspense fallback={<Loading />}>
+                {showInfo ?
+                    <PokeInfo
+                        poke={clickedPoke.current}
+                        hideInfo={hidePokeInfo}
+                        key={clickedPoke.current}
+                    />
+                :   <PokemonList
+                        pokeList={pokemonList}
+                        setSelectedPoke={setSelectedPoke}
+                    />
+                }
+            </Suspense>
+
+            <div
+                className={`w-full flex justify-between items-center place-self-center ${showInfo ? 'hidden' : ''}`}
+            >
+                <PaginationBar />
+            </div>
+            
         </>
     );
 }

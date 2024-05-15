@@ -10,14 +10,12 @@ export default function PokemonButton({ poke, index, sendCurrentPoke }) {
     const params = new URLSearchParams(searchParams);
 
     const setQuery = (name) => {
-        console.log('setting query');
         params.set('query', name);
         router.push(pathname + '?' + params.toString());
     };
 
     const activatePokeInfo = () => {
         setQuery(poke.name);
-        console.log('sending poke from pokemon button');
         sendCurrentPoke(poke);
     };
 

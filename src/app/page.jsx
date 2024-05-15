@@ -2,6 +2,7 @@ import PokemonListContainer from '@/app/PokemonListContainer';
 import LoadingPage from '@/app/LoadingPage';
 import Image from 'next/image';
 import dex from '../../public/pokeDEX.png';
+import { userAgent } from 'next/server';
 
 import { Suspense } from 'react';
 
@@ -40,7 +41,7 @@ export default async function Page(searchParams) {
     return (
         <main
             id='main'
-            className={`grid grid-cols-1 w-full md:h-dvh min-h-dvh text-slate-800 dark:text-slate-200 bg-gradient-to-r from-cyan-300 to-violet-400 dark:from-cyan-950 dark:to-slate-900 px-4 py-8 md:px-16 transition-all info`}
+            className={`grid grid-cols-1 grid-rows-mobile md:grid-rows-bs w-full xl:h-dvh min-h-dvh text-slate-800 dark:text-slate-200 bg-gradient-to-r from-cyan-300 to-violet-400 dark:from-cyan-950 dark:to-slate-900 px-4 py-8 md:px-16 transition-all`}
         >
             <div className='flex gap-2 items-center'>
                 <Image

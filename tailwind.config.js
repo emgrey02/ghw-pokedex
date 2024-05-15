@@ -10,8 +10,9 @@ module.exports = {
 				'gradient-conic':
 					'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
 			},
-			gridTemplateColumns: {
-				'13': 'repeat(13, minmax(0, 1fr))',
+			gridTemplateRows: {
+				'mobile': '80px 160px auto auto auto',
+				'bs': '80px 160px auto 100px'
 			},
 		},
 	},

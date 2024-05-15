@@ -8,7 +8,6 @@ export default function AudioPlayer({ audio }) {
     const [loading, setLoading] = useState(false);
 
     function playAudio(e) {
-        console.log('playing audio');
         e.currentTarget.firstChild.play();
     }
 
@@ -51,7 +50,7 @@ export default function AudioPlayer({ audio }) {
             }
         }
 
-        throw new Error("Poll timeout");
+        console.log("Poll timeout");
     }
     
     async function waitForSeconds(seconds) {

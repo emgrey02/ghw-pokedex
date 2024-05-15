@@ -3,8 +3,6 @@ import Image from 'next/image';
 import AudioPlayer from './AudioPlayer';
 
 export default function PokeInfo({ poke, hideInfo }) {
-    console.log(poke);
-
     return (
         <>
             <div

@@ -47,7 +47,7 @@ export default function PokemonSearch({ onDataFromChild }) {
         <>
             <form
                 onSubmit={doTheThing}
-                className='grid w-80 my-10'
+                className='grid w-80 my-2'
             >
                 <label htmlFor='name'>Search for a Pokemon</label>
                 <input
