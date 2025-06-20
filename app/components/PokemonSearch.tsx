@@ -1,17 +1,13 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSearchParams } from 'next/navigation';
 
 export default function PokemonSearch() {
     const [errorMessage, setErrorMessage] = useState(null);
     const [isLoading, setLoading] = useState(false);
     const router = useRouter();
-    const searchParams = useSearchParams();
 
     async function doTheThing(e) {
-        const page = searchParams.get('page') || '1';
-
         e.preventDefault();
         async function getPokemonFromSearch(name) {
             if (name === '') {

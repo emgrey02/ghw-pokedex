@@ -1,22 +1,31 @@
 'use client';
 import PokemonList from './PokemonList';
 import PaginationBar from './PaginationBar';
+import { Suspense } from 'react';
+import LoadingPage from './LoadingPage';
 
 export default function PokemonListContainer({ pokemonList }) {
     return (
         <>
-            <div
-                className={`w-full flex justify-between items-center place-self-center`}
-            >
-                <PaginationBar />
-            </div>
-            <PokemonList pokeList={pokemonList} />
+            <Suspense fallback={<LoadingPage />}>
+                <div
+                    className={`w-full flex justify-between items-center place-self-center`}
+                >
+                    <PaginationBar />
+                </div>
+            </Suspense>
 
-            <div
-                className={`w-full flex justify-between items-center place-self-center md:hidden`}
-            >
-                <PaginationBar />
-            </div>
+            <Suspense fallback={<LoadingPage />}>
+                <PokemonList pokeList={pokemonList} />
+            </Suspense>
+
+            <Suspense fallback={<LoadingPage />}>
+                <div
+                    className={`w-full flex justify-between items-center place-self-center md:hidden`}
+                >
+                    <PaginationBar />
+                </div>
+            </Suspense>
         </>
     );
 }
