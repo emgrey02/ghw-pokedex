@@ -34,16 +34,11 @@ input {
 }
 
 .info {
-    grid-template-rows: 100px 200px 100px auto 100px;
+    grid-template-rows: 80px 200px 100px auto 100px;
 }
 
 @media (min-width: 768px) {
     .info {
-        grid-template-rows: 100px 200px auto 100px;
+        grid-template-rows: auto;
     }
-}
-
-.yes-info {
-    grid-template-rows: 100px auto 100px;
-    min-height: 100vh;
 }
