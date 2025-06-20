@@ -1,15 +1,30 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+html,
+body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+button {
+    cursor: pointer;
+}
 
 body {
-    color: rgb(var(--foreground-rgb));
-    background: linear-gradient(
-            to bottom,
-            transparent,
-            rgb(var(--background-end-rgb))
-        )
-        rgb(var(--background-start-rgb));
+    display: flex;
+    flex-direction: column;
+
+    main {
+        flex: 1 0 auto;
+    }
+
+    footer {
+        flex-shrink: 0;
+    }
+}
+
+input {
+    color: black;
 }
 
 @layer utilities {

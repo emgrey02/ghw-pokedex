@@ -1,17 +1,12 @@
-'use client';
 import PokemonButton from './PokemonButton';
-import Loading from './Loading';
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
-export default function PokemonList({ pokeList, setSelectedPoke }) {
+export default function PokemonList({ pokeList }) {
     const searchParams = useSearchParams();
-
     const [pokemonList, setPokemonList] = useState(pokeList);
-    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        setLoading(true);
         let page = searchParams.get('page');
         console.log(page);
 
@@ -34,38 +29,27 @@ export default function PokemonList({ pokeList, setSelectedPoke }) {
             const pokemonUrls = await fetch(url).then((res) => res.json());
 
             const pokemon = await Promise.all(
-                pokemonUrls.results.map((p) => getOnePokemon(p.url)),
+                pokemonUrls.results.map((p) => getOnePokemon(p.url))
             );
             setPokemonList(pokemon);
-            setLoading(false);
         }
 
         getCurrentPokemon(page);
     }, [searchParams]);
 
-    function setPoke(poke) {
-        console.log('setting poke from pokemonList');
-        setSelectedPoke(poke);
-    }
-
-    if (loading) {
-        return <Loading />;
-    }
-
     return (
         <ul
             id='listComp'
-            className={`w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 overflow-scroll ring-2 ring-indigo-300 dark:ring-indigo-950 my-2 p-2 rounded `}
+            className={`w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 overflow-scroll ring-2 ring-indigo-800/80 my-2 p-2 rounded place-items-center`}
         >
             {pokemonList.map((poke, index) => (
                 <li
-                    className='flex flex-col items-center hover:dark:text-gray-300 hover:text-gray-950 hover:font-semibold py-3 hover:ring-slate-500 hover:dark:ring-slate-950/60 rounded-lg hover:shadow-lg hover:shadow-slate-500/60 hover:dark:shadow-slate-900/80 hover:bg-sky-300/40 hover:dark:bg-indigo-900/20 focus:outline-0 focus:ring-2 ring-slate-600 dark:ring-slate-300 transition-all'
+                    className='w-fit px-4 py-2 flex flex-col items-center rounded-lg hover:shadow-lg hover:shadow-slate-500/60 hover:bg-purple-300/40 focus:outline-0 focus:ring-2 ring-indigo-600 transition-all'
                     key={index}
                 >
                     <PokemonButton
                         poke={poke}
                         index={index}
-                        sendCurrentPoke={setPoke}
                     />
                 </li>
             ))}

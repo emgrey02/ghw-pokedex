@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import Button from '@/app/Button';
+import Button from './Button';
 
 export default function PaginationBar() {
     const [isBackDisabled, setBackDisability] = useState(false);
@@ -10,7 +10,7 @@ export default function PaginationBar() {
     const pathname = usePathname();
 
     let searchParams = useSearchParams();
-    let currentPage = searchParams.get('page') || 1;
+    let currentPage = searchParams.get('page') || '1';
     const params = new URLSearchParams(searchParams);
 
     useEffect(() => {
@@ -32,10 +32,10 @@ export default function PaginationBar() {
         let button = e.currentTarget.getAttribute('data-id');
 
         if (button == 'prev') {
-            params.set('page', Number(currentPage) - 1);
+            params.set('page', (Number(currentPage) - 1).toString());
             router.push(pathname + '?' + params.toString());
         } else if (button == 'next') {
-            params.set('page', Number(currentPage) + 1);
+            params.set('page', (Number(currentPage) + 1).toString());
             router.push(pathname + '?' + params.toString());
         }
     };
@@ -50,20 +50,19 @@ export default function PaginationBar() {
     return (
         <div className='flex flex-row justify-center align-center h-full w-full'>
             <ul className='grid grid-cols-11 place-items-center h-min w-full'>
-                <li className='hover:bg-indigo-900/60 dark:hover:bg-indigo-400 rounded transition'>
+                <li className='hover:bg-indigo-900/60 rounded transition'>
                     <Link
-                        className='p-2 stroke-slate-700 dark:stroke-slate-400 hover:stroke-slate-900 transition'
+                        className='p-2 stroke-slate-700 hover:stroke-slate-900 transition'
                         href={`/?page=1`}
-                        page={1}
                     >
                         <svg
-                            title='Go to first page'
                             xmlns='http://www.w3.org/2000/svg'
                             width='40'
                             height='40'
                             fill='none'
                             viewBox='0 0 24 24'
                         >
+                            <title>go to first page</title>
                             <path
                                 strokeLinecap='round'
                                 strokeLinejoin='round'
@@ -80,12 +79,12 @@ export default function PaginationBar() {
                         disabled={isBackDisabled}
                     >
                         <svg
-                            title='go to previous page'
                             xmlns='http://www.w3.org/2000/svg'
                             width='20'
                             height='20'
                             viewBox='-4.5 0 20 20'
                         >
+                            <title>go to previous page</title>
                             <g
                                 fillRule='evenodd'
                                 stroke='none'
@@ -101,26 +100,29 @@ export default function PaginationBar() {
                     </Button>
                 </li>
                 <li>
-                    <div className={`${currentPage <= 3 ? 'invisible' : ''}`}>
+                    <div className={`${+currentPage <= 3 ? 'invisible' : ''}`}>
                         ...
                     </div>
                 </li>
                 {pages.map((p) => (
                     <li
-                        className='hover:bg-slate-900/20 dark:hover:bg-slate-900 rounded transition'
+                        className='hover:bg-slate-900/20  rounded transition'
                         key={p}
                     >
                         <Link
-                            className={`block p-2 ${p == currentPage ? 'text-xl underline font-bold text-indigo-950/80 dark:text-indigo-400' : ''} w-min`}
+                            className={`block p-2 ${
+                                p == +currentPage
+                                    ? 'text-xl underline font-bold text-indigo-950/80 '
+                                    : ''
+                            } w-min`}
                             href={`/?page=${p}`}
-                            page={p}
                         >
                             {p}
                         </Link>
                     </li>
                 ))}
                 <li>
-                    <div className={`${currentPage >= 80 ? 'invisible' : ''}`}>
+                    <div className={`${+currentPage >= 80 ? 'invisible' : ''}`}>
                         ...
                     </div>
                 </li>
@@ -131,12 +133,12 @@ export default function PaginationBar() {
                         disabled={isNextDisabled}
                     >
                         <svg
-                            title='go to next page'
                             xmlns='http://www.w3.org/2000/svg'
                             width='20'
                             height='20'
                             viewBox='-4.5 0 20 20'
                         >
+                            <title>go to next page</title>
                             <g
                                 fillRule='evenodd'
                                 stroke='none'
@@ -151,19 +153,18 @@ export default function PaginationBar() {
                         </svg>
                     </Button>
                 </li>
-                <li className='hover:bg-indigo-900/60 dark:hover:bg-indigo-400 rounded transition'>
+                <li className='hover:bg-indigo-900/60  rounded transition'>
                     <Link
-                        className={`p-2 stroke-slate-700 dark:stroke-slate-400 hover:stroke-slate-900 transition`}
+                        className={`p-2 stroke-slate-700  hover:stroke-slate-900 transition`}
                         href={`/?page=82`}
-                        page={82}
                     >
                         <svg
-                            title='go to last page'
                             xmlns='http://www.w3.org/2000/svg'
                             width='40'
                             height='40'
                             viewBox='0 0 24 24'
                         >
+                            <title>go to last page</title>
                             <path
                                 strokeLinecap='round'
                                 strokeLinejoin='round'

@@ -1,15 +1,17 @@
+'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
-export default function PokemonSearch({ onDataFromChild }) {
+export default function PokemonSearch() {
     const [errorMessage, setErrorMessage] = useState(null);
     const [isLoading, setLoading] = useState(false);
-
-    const sendDataToParent = (data) => {
-        onDataFromChild(data);
-        setLoading(false);
-    };
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
     async function doTheThing(e) {
+        const page = searchParams.get('page') || '1';
+
         e.preventDefault();
         async function getPokemonFromSearch(name) {
             if (name === '') {
@@ -17,7 +19,7 @@ export default function PokemonSearch({ onDataFromChild }) {
             }
 
             const res = await fetch(
-                `https://pokeapi.co/api/v2/pokemon/${name}`,
+                `https://pokeapi.co/api/v2/pokemon/${name}`
             );
 
             if (!res.ok) {
@@ -28,7 +30,7 @@ export default function PokemonSearch({ onDataFromChild }) {
         }
 
         let pokemon = await getPokemonFromSearch(
-            e.currentTarget[0].value.toLowerCase(),
+            e.currentTarget[0].value.toLowerCase()
         );
 
         if (typeof pokemon === 'string') {
@@ -38,35 +40,45 @@ export default function PokemonSearch({ onDataFromChild }) {
                 setErrorMessage(null);
             }, 4000);
             return;
+        } else {
+            e.target.childNodes[1].value = '';
+            setLoading(false);
+            router.push(`/${pokemon.name}`);
         }
-        sendDataToParent(pokemon);
-        e.target.childNodes[1].value = '';
     }
 
     return (
         <>
             <form
                 onSubmit={doTheThing}
-                className='grid w-80 my-10'
+                className='grid gap-2 w-80 my-10 relative'
             >
-                <label htmlFor='name'>Search for a Pokemon</label>
+                <label
+                    htmlFor='name'
+                    className='mb-3'
+                >
+                    Search for a Pokemon
+                </label>
+                <span className='absolute top-[25px] text-xs h-5 text-red-600 font-bold'>
+                    {errorMessage ? errorMessage : ''}
+                </span>
                 <input
-                    className='bg-slate-600 text-slate-200 dark:bg-slate-400 dark:text-slate-900 p-2 my-2 rounded focus:outline-none focus:ring-4 ring-indigo-950 dark:ring-indigo-200 transition-all'
+                    className='bg-slate-100 border-[2px] border-slate-600 p-2 rounded focus:outline-none focus:ring-2 ring-slate-950  transition-all'
                     name='name'
                     id='name'
                     type='text'
                 />
-                <span className='text-xs h-5 text-red-600 dark:text-red-300 font-bold'>
-                    {errorMessage ? errorMessage : ''}
-                </span>
+
                 <button
                     onClick={() => setLoading(true)}
-                    className='flex justify-center dark:text-slate-800 font-semibold dark:hover:text-slate-200 w-full p-2 bg-indigo-900/60 hover:bg-indigo-900/30 text-slate-100 dark:bg-indigo-400 dark:hover:bg-indigo-400/50 rounded transition-all focus:outline-none focus:ring-4 ring-indigo-950 dark:ring-indigo-200 border border-slate-800 dark:border-slate-600'
+                    className='cursor-pointer flex justify-center font-semibold w-full p-2 hover:bg-indigo-900/30  text-slate-600 hover:text-slate-900 rounded transition-all focus:outline-none focus:ring-2 ring-slate-950 border-[2px] border-slate-800 '
                     type='submit'
                 >
-                    {isLoading ?
+                    {isLoading ? (
                         <span className='block animate-spin w-6 h-6 rounded-full border-t-2 border-r-2 border-zinc-300 dark:border-zinc-300 '></span>
-                    :   'Search'}
+                    ) : (
+                        'Search'
+                    )}
                 </button>
             </form>
         </>
