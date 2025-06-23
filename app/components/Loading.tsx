@@ -1,4 +1,4 @@
-export default function LoadingPage() {
+export default function Loading() {
     return (
         <div className='w-full h-full text-slate-800  grid gap-2 place-items-center'>
             <div className='flex gap-2 place-items-center'>

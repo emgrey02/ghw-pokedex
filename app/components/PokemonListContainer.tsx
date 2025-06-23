@@ -2,12 +2,12 @@
 import PokemonList from './PokemonList';
 import PaginationBar from './PaginationBar';
 import { Suspense } from 'react';
-import LoadingPage from './LoadingPage';
+import Loading from './Loading';
 
 export default function PokemonListContainer({ pokemonList }) {
     return (
         <>
-            <Suspense fallback={<LoadingPage />}>
+            <Suspense fallback={<Loading />}>
                 <div
                     className={`w-full flex justify-between items-center place-self-center`}
                 >
@@ -15,11 +15,11 @@ export default function PokemonListContainer({ pokemonList }) {
                 </div>
             </Suspense>
 
-            <Suspense fallback={<LoadingPage />}>
+            <Suspense fallback={<Loading />}>
                 <PokemonList pokeList={pokemonList} />
             </Suspense>
 
-            <Suspense fallback={<LoadingPage />}>
+            <Suspense fallback={<Loading />}>
                 <div
                     className={`w-full flex justify-between items-center place-self-center md:hidden`}
                 >

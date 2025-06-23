@@ -40,11 +40,11 @@ export default function PokemonList({ pokeList }) {
     return (
         <ul
             id='listComp'
-            className={`w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 overflow-scroll ring-2 ring-indigo-800/80 my-2 p-2 rounded place-items-center`}
+            className={`w-full grid grid-cols-2 sm:grid-cols-4 overflow-scroll ring-2 ring-indigo-800/80 my-2 p-2 rounded place-items-center`}
         >
             {pokemonList.map((poke, index) => (
                 <li
-                    className='w-fit px-4 py-2 flex flex-col items-center rounded-lg hover:shadow-lg hover:shadow-slate-500/60 hover:bg-purple-300/40 focus:outline-0 focus:ring-2 ring-indigo-600 transition-all'
+                    className='w-fit px-4 py-2 flex flex-col items-center'
                     key={index}
                 >
                     <PokemonButton

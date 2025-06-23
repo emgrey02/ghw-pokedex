@@ -48,14 +48,12 @@ export default function PaginationBar() {
     });
 
     return (
-        <div className='flex flex-row justify-center align-center h-full w-full'>
+        <div className='flex flex-row justify-center align-center h-full w-full my-2'>
             <ul className='grid grid-cols-11 place-items-center h-min w-full'>
-                <li className='hover:bg-indigo-900/60 rounded transition'>
-                    <Link
-                        className='p-2 stroke-slate-700 hover:stroke-slate-900 transition'
-                        href={`/?page=1`}
-                    >
+                <li>
+                    <Link href={`/?page=1`}>
                         <svg
+                            className='stroke-slate-700 hover:stroke-slate-900 bg-transparent hover:bg-indigo-900/60 rounded border-slate-700 disabled:border-slate-500 disabled:bg-inherit transition focus:outline-none focus:ring-2 ring-slate-800 hover:fill-slate-900  disabled:fill-gray-400'
                             xmlns='http://www.w3.org/2000/svg'
                             width='40'
                             height='40'
@@ -153,12 +151,10 @@ export default function PaginationBar() {
                         </svg>
                     </Button>
                 </li>
-                <li className='hover:bg-indigo-900/60  rounded transition'>
-                    <Link
-                        className={`p-2 stroke-slate-700  hover:stroke-slate-900 transition`}
-                        href={`/?page=82`}
-                    >
+                <li>
+                    <Link href={`/?page=82`}>
                         <svg
+                            className='stroke-slate-700 hover:stroke-slate-900 bg-transparent hover:bg-indigo-900/60 rounded border-slate-700 disabled:border-slate-500 disabled:bg-inherit transition focus:outline-none focus:ring-2 ring-slate-800 hover:fill-slate-900  disabled:fill-gray-400'
                             xmlns='http://www.w3.org/2000/svg'
                             width='40'
                             height='40'

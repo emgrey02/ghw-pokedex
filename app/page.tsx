@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import PokemonSearch from './components/PokemonSearch';
 import Footer from './components/Footer';
 
 import PokemonListContainer from './components/PokemonListContainer';
@@ -33,9 +33,10 @@ export default async function Page(searchParams) {
 
     return (
         <>
+            <PokemonSearch />
             <main
                 id='main'
-                className={`text-slate-800 info md:w-[700px]`}
+                className={`text-slate-800`}
             >
                 <PokemonListContainer pokemonList={pokemonList} />
             </main>
