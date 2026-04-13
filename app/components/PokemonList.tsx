@@ -1,41 +1,44 @@
+import { Suspense } from 'react';
 import PokemonButton from './PokemonButton';
-import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import Loading from './Loading';
 
-export default function PokemonList({ pokeList }) {
-    const searchParams = useSearchParams();
-    const [pokemonList, setPokemonList] = useState(pokeList);
+export default async function PokemonList(props: {
+    pagePromise: Promise<{ page: number }>;
+}) {
+    const pageNumObj = await props.pagePromise;
+    const page = pageNumObj.page;
+    const options: RequestInit = {
+        method: 'GET',
+        cache: 'force-cache',
+    };
 
-    useEffect(() => {
-        let page = searchParams.get('page');
-        console.log(page);
+    async function getCurrentPokemon(page: number) {
+        let offset: number;
 
-        async function getCurrentPokemon(page) {
-            let offset;
-
-            async function getOnePokemon(url) {
-                const res = await fetch(url);
-                return res.json();
-            }
-
-            if (page > 1) {
-                offset = Number(page - 1) * 16;
-            } else {
-                offset = 0;
-            }
-
-            const url = `https://pokeapi.co/api/v2/pokemon/?limit=16&offset=${offset}`;
-
-            const pokemonUrls = await fetch(url).then((res) => res.json());
-
-            const pokemon = await Promise.all(
-                pokemonUrls.results.map((p) => getOnePokemon(p.url))
-            );
-            setPokemonList(pokemon);
+        if (page > 1) {
+            offset = Number(page - 1) * 16;
+        } else {
+            offset = 0;
         }
 
-        getCurrentPokemon(page);
-    }, [searchParams]);
+        const url = `https://pokeapi.co/api/v2/pokemon/?limit=16&offset=${offset}`;
+
+        const pokemonUrls = await fetch(url, options).then((res) => res.json());
+        console.log(pokemonUrls);
+
+        const pokemon = await Promise.all(
+            pokemonUrls.results.map((p) => getOnePokemon(p.url)),
+        );
+        return pokemon;
+    }
+
+    async function getOnePokemon(url: string) {
+        const res = await fetch(url, options);
+        return res.json();
+    }
+
+    const pokemonList = await getCurrentPokemon(page);
+    console.log(pokemonList);
 
     return (
         <ul

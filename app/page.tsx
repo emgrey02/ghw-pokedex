@@ -1,36 +1,13 @@
 import PokemonSearch from './components/PokemonSearch';
 import Footer from './components/Footer';
+import Loading from './components/Loading';
+import { Suspense } from 'react';
+import PaginationBar from './components/PaginationBar';
+import PokemonList from './components/PokemonList';
 
-import PokemonListContainer from './components/PokemonListContainer';
-
-export default async function Page(searchParams) {
-    const pageNum = searchParams.page || 1;
-
-    async function getCurrentPokemon(page) {
-        let offset;
-
-        if (page > 1) {
-            offset = Number(page - 1) * 16;
-        } else {
-            offset = 0;
-        }
-
-        const url = `https://pokeapi.co/api/v2/pokemon/?limit=16&offset=${offset}`;
-
-        const pokemonUrls = await fetch(url).then((res) => res.json());
-        const pokemon = await Promise.all(
-            pokemonUrls.results.map((p) => getOnePokemon(p.url))
-        );
-        return pokemon;
-    }
-
-    async function getOnePokemon(url) {
-        const res = await fetch(url);
-        return res.json();
-    }
-
-    const pokemonList = await getCurrentPokemon(pageNum);
-
+export default async function Page(props: {
+    searchParams: Promise<{ page: number }>;
+}) {
     return (
         <>
             <PokemonSearch />
@@ -38,7 +15,19 @@ export default async function Page(searchParams) {
                 id='main'
                 className={`text-slate-800`}
             >
-                <PokemonListContainer pokemonList={pokemonList} />
+                <div
+                    className={`w-full flex justify-between items-center place-self-center`}
+                >
+                    <PaginationBar />
+                </div>
+                <Suspense fallback={<Loading />}>
+                    <PokemonList pagePromise={props.searchParams} />
+                </Suspense>
+                <div
+                    className={`w-full flex justify-between items-center place-self-center md:hidden`}
+                >
+                    <PaginationBar />
+                </div>
             </main>
             <Footer />
         </>

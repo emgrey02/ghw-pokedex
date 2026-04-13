@@ -1,7 +1,7 @@
 import './globals.css';
 import Image from 'next/image';
-import dex from '../public/pokeDEX.png';
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
     title: 'Pokedex',
@@ -39,11 +39,12 @@ export default function RootLayout({
                         width='80'
                         height='80'
                         alt='pokedex icon'
-                        src={dex}
+                        src='/pokeDEX.png'
                     />
                     <h1 className='text-3xl font-medium py-4'>Pokedex</h1>
                 </header>
                 {children}
+                <Analytics />
             </body>
         </html>
     );

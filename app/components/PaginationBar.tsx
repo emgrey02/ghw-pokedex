@@ -1,3 +1,4 @@
+'use client';
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -109,9 +110,9 @@ export default function PaginationBar() {
                     >
                         <Link
                             className={`block p-2 ${
-                                p == +currentPage
-                                    ? 'text-xl underline font-bold text-indigo-950/80 '
-                                    : ''
+                                p == +currentPage ?
+                                    'text-xl underline font-bold text-indigo-950/80 '
+                                :   ''
                             } w-min`}
                             href={`/?page=${p}`}
                         >

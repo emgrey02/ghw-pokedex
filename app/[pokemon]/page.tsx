@@ -25,8 +25,10 @@ export default async function PokemonPage({ params }) {
                 >
                     <div className='grid grid-cols-2 h-min w-full gap-6 pb-10'>
                         <div className='relative flex flex-col ring-1 ring-indigo-900 dark:ring-indigo-300 p-4 self-start'>
-                            {poke.sprites.front_default ||
-                            poke.sprites.front_shiny ? (
+                            {(
+                                poke.sprites.front_default ||
+                                poke.sprites.front_shiny
+                            ) ?
                                 <>
                                     <Image
                                         className='relative'
@@ -44,12 +46,11 @@ export default async function PokemonPage({ params }) {
                                         }`}
                                     />
                                 </>
-                            ) : (
-                                <div
+                            :   <div
                                     className='w-24 h-24 bg-gray-500/60'
                                     title='no pokemon image found'
                                 ></div>
-                            )}
+                            }
                         </div>
                         <div className='flex flex-col gap-8'>
                             <h2 className='text-zinc-900  text-2xl md:text-3xl font-bold transition-all'>
@@ -81,18 +82,23 @@ export default async function PokemonPage({ params }) {
                     <div className='grid grid-cols-3 items-center'>
                         <div className='flex flex-col items-center justify-center'>
                             <p className='text-2xl md:text-3xl text-indigo-900  font-semibold transition-all'>
-                                {poke.weight / 10 || 'N/A'} kg
+                                {Math.round((poke.weight / 10) * 2.2) || 'N/A'}{' '}
+                                lbs
                             </p>
                             <h3 className='text-xs md:text-sm transition-all'>
-                                Weight
+                                weight
                             </h3>
                         </div>
                         <div className='flex flex-col items-center justify-center'>
                             <p className='text-2xl md:text-3xl text-indigo-900  font-semibold transition-all'>
-                                {poke.height / 10 || 'N/A'} m
+                                {Math.round((poke.height / 10) * 39.37) >= 12 ?
+                                    `${((poke.height / 10) * 3.28).toFixed(1)}'`
+                                :   `${Math.round((poke.height / 10) * 39.37)}"` ||
+                                    'N/A'
+                                }
                             </p>
                             <h3 className='text-xs md:text-sm transition-all'>
-                                Height
+                                height
                             </h3>
                         </div>
                         <div className='flex flex-col items-center justify-center'>
@@ -100,7 +106,7 @@ export default async function PokemonPage({ params }) {
                                 {poke.base_experience || 'N/A'}
                             </p>
                             <h3 className='text-xs md:text-sm transition-all'>
-                                Base XP
+                                base XP
                             </h3>
                         </div>
                     </div>
@@ -119,7 +125,7 @@ export default async function PokemonPage({ params }) {
                                     {stat.base_stat || 'N/A'}
                                 </p>
                                 <h3 className='text-xs md:text-sm text-center transition-all'>
-                                    {stat.stat.name}
+                                    {stat.stat.name.split('-').join(' ')}
                                 </h3>
                             </div>
                         ))}

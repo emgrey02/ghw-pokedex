@@ -8,17 +8,18 @@ export default function PokemonButton({ poke, index }) {
             data-order={index}
             href={`/${poke.name}`}
         >
-            {poke.sprites.front_default || poke.sprites.front_shiny ? (
+            {poke.sprites.front_default || poke.sprites.front_shiny ?
                 <Image
                     src={poke.sprites.front_default || poke.sprites.front_shiny}
                     width={100}
                     height={100}
                     alt={`picture of ${poke.name}`}
                 />
-            ) : (
-                <div className='w-20 h-20 bg-purple-600/60'></div>
-            )}
-            <h2 className='text-inherit'>
+            :   <div className='w-20 h-20 grid place-items-center text-center text-black bg-purple-600/60'>
+                    no image available
+                </div>
+            }
+            <h2 className='text-inherit w-[15ch] text-center'>
                 {poke.name.charAt(0).toUpperCase() + poke.name.slice(1)}
             </h2>
         </Link>
