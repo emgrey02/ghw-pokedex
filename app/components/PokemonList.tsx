@@ -1,28 +1,86 @@
-import { Suspense } from 'react';
-import PokemonButton from './PokemonButton';
-import Loading from './Loading';
-import PaginationBar from './PaginationBar';
 import SearchResults from './SearchResults';
-import AllPokemon from './AllPokemon';
+import { Suspense } from 'react';
+import Loading from '../loading';
+import PaginationBar from './PaginationBar';
+import PokemonButton from './PokemonButton';
 
 export default async function PokemonList(props: {
     pagePromise: Promise<{ page: number; query?: string }>;
 }) {
-    const pageNumObj = await props.pagePromise;
-    const page = pageNumObj.page;
-    const query = pageNumObj.query;
+    const searchParams = await props.pagePromise;
+    const page = searchParams.page;
+    const query = searchParams.query;
+
+    let totalPages = 1;
+    let pokemonList = [];
+
+    const options: RequestInit = {
+        method: 'GET',
+        cache: 'force-cache',
+    };
+
+    async function getCurrentPokemon(page: number) {
+        let offset: number;
+
+        if (page > 1) {
+            offset = Number(page - 1) * 16;
+        } else {
+            offset = 0;
+        }
+
+        const url = `https://pokeapi.co/api/v2/pokemon/?limit=16&offset=${offset}`;
+
+        const pokemonUrls = await fetch(url, options).then((res) => res.json());
+        totalPages = Math.ceil(pokemonUrls.count / 16);
+
+        const pokemon = await Promise.all(
+            pokemonUrls.results.map((p) => getOnePokemon(p.url)),
+        );
+        return pokemon;
+    }
+
+    async function getOnePokemon(url: string) {
+        const res = await fetch(url, options);
+        return res.json();
+    }
+
+    pokemonList = await getCurrentPokemon(page);
 
     return (
         <>
             {query ?
                 <Suspense fallback={<Loading />}>
                     <SearchResults
+                        page={page}
                         query={query}
-                        currentPage={page}
                     />
                 </Suspense>
             :   <Suspense fallback={<Loading />}>
-                    <AllPokemon currentPage={page} />
+                    <div
+                        className={`flex justify-center items-center place-self-center my-2`}
+                    >
+                        <PaginationBar totalPages={totalPages} />
+                    </div>
+                    <ul
+                        className={`w-[80vw] grid grid-cols-2 sm:grid-cols-4 overflow-scroll ring-2 ring-indigo-800/80 my-2 p-2 rounded place-items-center`}
+                    >
+                        {pokemonList.map((poke, index) => (
+                            <li
+                                className='w-fit px-4 py-2 flex flex-col items-center'
+                                key={index}
+                            >
+                                <PokemonButton
+                                    poke={poke}
+                                    index={index}
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                    <div
+                        className={`w-full flex justify-between items-center place-self-center md:hidden`}
+                    >
+                        <PaginationBar totalPages={totalPages} />
+                    </div>
                 </Suspense>
             }
         </>
