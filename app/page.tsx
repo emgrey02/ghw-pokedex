@@ -4,9 +4,7 @@ import Loading from './components/Loading';
 import { Suspense } from 'react';
 import PokemonList from './components/PokemonList';
 
-export default async function Page(props: {
-    searchParams: Promise<{ page: number }>;
-}) {
+export default async function Page() {
     return (
         <>
             <PokemonSearch />
@@ -15,7 +13,7 @@ export default async function Page(props: {
                 className={`text-slate-800`}
             >
                 <Suspense fallback={<Loading />}>
-                    <PokemonList pagePromise={props.searchParams} />
+                    <PokemonList />
                 </Suspense>
             </main>
             <Footer />
