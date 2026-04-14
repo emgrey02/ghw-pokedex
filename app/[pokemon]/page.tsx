@@ -7,7 +7,7 @@ export default async function PokemonPage({ params }) {
     const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
 
     if (!res.ok) {
-        return `That's not a pokemon. Try searching again.`;
+        console.log('that pokemon does not exist');
     }
     const poke = await res.json();
 
