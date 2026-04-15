@@ -17,14 +17,20 @@ export default function PokemonList() {
 
     const options: RequestInit = {
         method: 'GET',
-        cache: 'force-cache',
+        next: {
+            revalidate: 60 * 60 * 24,
+        },
     };
 
     useEffect(() => {
         setIsLoading(true);
         async function getOnePokemon(url: string) {
             const res = await fetch(url, options);
-            return res.json();
+            if (!res.ok) {
+                console.error('failed to get this pokemon: ', res.url);
+            } else {
+                return res.json();
+            }
         }
 
         async function getCurrentPokemon(page: number) {
@@ -67,23 +73,25 @@ export default function PokemonList() {
                     </div>
                     {isLoading ?
                         <Loading />
-                    :   <ul
-                            className={`w-[80vw] max-w-187.5 grid grid-cols-2 sm:grid-cols-4 overflow-scroll ring-2 ring-indigo-800/80 my-2 p-2 rounded place-items-center`}
-                        >
-                            <>
-                                {pokemonList.map((poke, index) => (
-                                    <li
-                                        className='w-fit px-4 py-2 flex flex-col items-center'
-                                        key={index}
-                                    >
-                                        <PokemonButton
-                                            poke={poke}
-                                            index={index}
-                                        />
-                                    </li>
-                                ))}
-                            </>
-                        </ul>
+                    :   <div className='flex justify-center'>
+                            <ul
+                                className={`w-[80vw] max-w-187.5 grid grid-cols-2 sm:grid-cols-4 overflow-scroll ring-2 ring-indigo-800/80 my-2 p-2 rounded place-items-center`}
+                            >
+                                <>
+                                    {pokemonList.map((poke, index) => (
+                                        <li
+                                            className='w-fit px-4 py-2 flex flex-col items-center'
+                                            key={index}
+                                        >
+                                            <PokemonButton
+                                                poke={poke}
+                                                index={index}
+                                            />
+                                        </li>
+                                    ))}
+                                </>
+                            </ul>
+                        </div>
                     }
 
                     <div

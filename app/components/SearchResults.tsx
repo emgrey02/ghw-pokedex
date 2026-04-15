@@ -17,7 +17,9 @@ export default function SearchResults(props: { page: number; query: string }) {
 
         const options: RequestInit = {
             method: 'GET',
-            cache: 'force-cache',
+            next: {
+                revalidate: 60 * 60 * 24,
+            },
         };
 
         async function getAllPokemon() {
@@ -82,33 +84,33 @@ export default function SearchResults(props: { page: number; query: string }) {
         <>
             {query && (
                 <>
-                    <div
-                        className={`flex justify-center items-center place-self-center my-2`}
-                    >
+                    <div className={`flex justify-center items-center my-2`}>
                         <PaginationBar totalPages={totalPages} />
                     </div>
                     {isLoading ?
                         <Loading />
-                    :   <ul
-                            className={`w-[80vw] max-w-187.5 grid grid-cols-2 sm:grid-cols-4 overflow-scroll ring-2 ring-indigo-800/80 my-2 p-2 rounded place-items-center`}
-                        >
-                            <>
-                                {pokemonList.map((poke, index) => (
-                                    <li
-                                        className='w-fit px-4 py-2 flex flex-col items-center'
-                                        key={index}
-                                    >
-                                        <PokemonButton
-                                            poke={poke}
-                                            index={index}
-                                        />
-                                    </li>
-                                ))}
-                            </>
-                        </ul>
+                    :   <div className='flex justify-center'>
+                            <ul
+                                className={`w-[80vw] max-w-187.5 grid grid-cols-2 sm:grid-cols-4 overflow-scroll ring-2 ring-indigo-800/80 my-2 p-2 rounded place-items-center`}
+                            >
+                                <>
+                                    {pokemonList.map((poke, index) => (
+                                        <li
+                                            className='w-fit px-4 py-2 flex flex-col items-center'
+                                            key={index}
+                                        >
+                                            <PokemonButton
+                                                poke={poke}
+                                                index={index}
+                                            />
+                                        </li>
+                                    ))}
+                                </>
+                            </ul>
+                        </div>
                     }
                     <div
-                        className={`w-full flex justify-between items-center place-self-center md:hidden`}
+                        className={`w-full flex justify-between items-center md:hidden`}
                     >
                         <PaginationBar totalPages={totalPages} />
                     </div>

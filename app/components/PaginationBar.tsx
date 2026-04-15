@@ -58,7 +58,7 @@ export default function PaginationBar(props: { totalPages: number }) {
     );
 
     return (
-        <ul className='w-full md:w-[60vw] flex justify-between items-center h-min'>
+        <ul className='w-full md:w-[60vw] lg:w-[40vw] flex justify-between items-center h-min'>
             <li>
                 <Link
                     href={`/?page=1${params.toString().includes('query') ? `&${par[1]}` : ''}`}
